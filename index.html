@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendario de Acompañamiento Docente · UTP</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed; --surface: #ffffff; --surface2: #f0ece5;
+    --ink: #1a1714; --ink-soft: #6b6560; --ink-faint: #b5b0a8;
+    --accent: #2d6a4f; --accent-light: #e8f5ee; --accent-mid: #52b788;
+    --warn: #c45c2a; --warn-light: #fdf0e8; --warn-mid: #e07a4a;
+    --sky: #2d5f8a; --sky-light: #e8f0f8;
+    --border: #e2ddd6; --radius: 12px;
+    --shadow: 0 2px 12px rgba(26,23,20,0.08);
+    --shadow-lg: 0 8px 32px rgba(26,23,20,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; font-size: 14px; }
+
+  .app-header { background: var(--ink); color: white; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .app-header h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; }
+  .app-header h1 span { color: #52b788; }
+  .header-meta { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+
+  .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; transition: all 0.18s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #245a41; transform: translateY(-1px); }
+  .btn-ghost { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.18); }
+  .btn-warn { background: #7a1e1e; color: white; }
+  .btn-warn:hover { background: #5a1515; }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-cancel { background: var(--surface2); color: var(--ink-soft); }
+  .btn-cancel:hover { background: var(--border); }
+
+  .app-body { display: flex; height: calc(100vh - 61px); overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar { width: 300px; min-width: 300px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .sidebar-section { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .sidebar-title { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px; }
+
+  .alert-list { display: flex; flex-direction: column; gap: 8px; }
+  .alert-item { background: var(--warn-light); border: 1px solid #f5c6a8; border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; transition: all 0.15s; }
+  .alert-item:hover { transform: translateX(2px); box-shadow: var(--shadow); }
+  .alert-dot { width: 8px; height: 8px; background: var(--warn); border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .alert-name { font-weight: 600; font-size: 13px; }
+  .alert-sub { font-size: 11px; color: var(--warn); margin-top: 1px; }
+
+  .obs-filters { display: flex; flex-direction: column; gap: 6px; }
+  .obs-filter-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; }
+  .obs-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .obs-label { font-size: 13px; }
+  .obs-count { margin-left: auto; font-size: 11px; font-weight: 600; background: var(--surface2); padding: 1px 7px; border-radius: 10px; color: var(--ink-soft); }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box { background: var(--surface2); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 26px; }
+  .stat-label { font-size: 10px; color: var(--ink-soft); margin-top: 2px; line-height: 1.3; }
+
+  .search-wrap { position: relative; }
+  .search-input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color 0.15s; }
+  .search-input:focus { border-color: var(--accent-mid); background: white; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); }
+
+  .sidebar-scroll { overflow-y: auto; flex: 1; }
+  .doc-list { padding: 8px 12px; }
+  .doc-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
+  .doc-item:hover { background: var(--surface2); }
+  .doc-item.selected { background: var(--accent-light); }
+  .doc-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; color: white; flex-shrink: 0; }
+  .doc-name { font-size: 13px; font-weight: 500; }
+  .doc-sub { font-size: 11px; color: var(--ink-soft); }
+  .doc-progress { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .progress-label { font-size: 10px; font-weight: 600; }
+  .progress-bar-wrap { width: 40px; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 4px; }
+  .prog-ok { background: var(--accent-mid); }
+  .prog-warn { background: var(--warn-mid); }
+  .prog-low { background: var(--ink-faint); }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .month-nav { display: flex; align-items: center; gap: 14px; }
+  .month-name { font-family: 'DM Serif Display', serif; font-size: 28px; min-width: 220px; }
+  .nav-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--ink-soft); transition: all 0.15s; }
+  .nav-btn:hover { background: var(--ink); color: white; border-color: var(--ink); }
+
+  .calendar-grid { background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+  .cal-weekdays { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .cal-weekday { padding: 10px; text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink-soft); }
+  .cal-days { display: grid; grid-template-columns: repeat(5, 1fr); }
+  .cal-day { min-height: 110px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 8px; transition: background 0.15s; }
+  .cal-day:nth-child(5n) { border-right: none; }
+  .cal-day:hover { background: #faf9f7; }
+  .cal-day.other-month { background: var(--surface2); opacity: 0.5; }
+  .cal-day.today { background: #fffdf5; }
+  .today-marker { width: 24px; height: 24px; background: var(--ink); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+  .day-num { font-size: 12px; font-weight: 500; color: var(--ink-soft); margin-bottom: 6px; }
+
+  .visit-chip { display: flex; align-items: center; gap: 5px; padding: 3px 7px; border-radius: 5px; margin-bottom: 3px; cursor: pointer; transition: all 0.15s; font-size: 11px; font-weight: 500; border: 1px solid transparent; }
+  .visit-chip:hover { transform: translateX(1px); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .chip-more { font-size: 10px; color: var(--ink-faint); padding: 2px 0; }
+
+  .c-utp { background: #e8f0f8; color: #1e4a73; border-color: #b8d0e8; }
+  .c-utp .chip-dot { background: #2d5f8a; }
+  .c-dir { background: #e8f5ee; color: #1a4a30; border-color: #a8d8bc; }
+  .c-dir .chip-dot { background: #2d6a4f; }
+  .c-ext { background: #f5e8f5; color: #4a1a6b; border-color: #d0a8d8; }
+  .c-ext .chip-dot { background: #8b2fc9; }
+  .tag-utp { background: #e8f0f8; color: #2d5f8a; }
+  .tag-dir { background: #e8f5ee; color: #2d6a4f; }
+  .tag-ext { background: #f5e8f5; color: #6b2fa0; }
+
+  /* VIEWS */
+  .docente-view { display: none; }
+  .docente-view.active { display: block; }
+  .calendar-view.hidden { display: none; }
+
+  /* MODALS */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,23,20,0.5); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 28px; width: 480px; max-width: 95vw; box-shadow: var(--shadow-lg); animation: popIn 0.2s ease; max-height: 90vh; overflow-y: auto; }
+  @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 20px; }
+  .form-row { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 5px; display: block; letter-spacing: 0.5px; }
+  .form-control { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color 0.15s; background: white; }
+  .form-control:focus { border-color: var(--accent-mid); }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+  .modal-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* DOCENTE VIEW */
+  .docente-header { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow); }
+  .docente-avatar-lg { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: white; flex-shrink: 0; }
+  .docente-info h2 { font-family: 'DM Serif Display', serif; font-size: 22px; }
+  .docente-info p { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .docente-stats { margin-left: auto; display: flex; gap: 20px; }
+  .docente-stat { text-align: center; }
+  .docente-stat-num { font-family: 'DM Serif Display', serif; font-size: 24px; }
+  .docente-stat-label { font-size: 11px; color: var(--ink-soft); }
+
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 9px; top: 8px; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow); cursor: pointer; transition: box-shadow 0.15s; }
+  .timeline-item:hover { box-shadow: var(--shadow-lg); }
+  .timeline-dot { position: absolute; left: -23px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white; }
+  .timeline-date { font-size: 11px; color: var(--ink-faint); font-weight: 600; margin-bottom: 4px; }
+  .timeline-name { font-size: 14px; font-weight: 600; }
+  .timeline-obs { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+
+  /* HEAT */
+  .heat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; padding: 4px; border-radius: 6px; transition: background 0.12s; }
+  .heat-row:hover { background: var(--surface2); }
+  .heat-label { width: 130px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .heat-blocks { display: flex; gap: 2px; }
+  .heat-block { width: 16px; height: 16px; border-radius: 3px; background: var(--border); }
+  .heat-block.filled { background: var(--accent-mid); }
+  .heat-block.warn { background: var(--warn-mid); }
+  .heat-count { font-size: 11px; color: var(--ink-faint); margin-left: 4px; }
+
+  .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .detail-field { display: flex; gap: 12px; margin-bottom: 14px; }
+  .detail-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .detail-key { font-size: 11px; color: var(--ink-faint); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .detail-val { font-size: 14px; color: var(--ink); margin-top: 2px; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-faint); }
+  .empty-state h3 { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink-soft); margin-bottom: 6px; }
+
+  /* SETUP SCREEN */
+  .setup-screen { position: fixed; inset: 0; background: var(--bg); z-index: 500; display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+  .setup-card { background: white; border-radius: 20px; padding: 40px; width: 540px; max-width: 100%; box-shadow: var(--shadow-lg); margin: auto; }
+  .setup-title { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 6px; }
+  .setup-sub { color: var(--ink-soft); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+  .setup-step { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent-mid); margin-bottom: 20px; }
+
+  .docente-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .docente-row .form-control { flex: 1; margin: 0; }
+  .btn-remove { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 16px; color: var(--ink-faint); display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+  .btn-remove:hover { background: var(--warn-light); border-color: var(--warn); color: var(--warn); }
+  .btn-add-doc { width: 100%; padding: 9px; border: 1.5px dashed var(--border); border-radius: 8px; background: transparent; cursor: pointer; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; font-size: 13px; transition: all 0.15s; margin-top: 4px; }
+  .btn-add-doc:hover { border-color: var(--accent-mid); color: var(--accent); background: var(--accent-light); }
+
+  .save-indicator { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: white; padding: 10px 16px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 300; }
+  .save-indicator.show { opacity: 1; }
+
+  .color-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+  /* CONFIG PANEL */
+  .config-section { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .config-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; padding: 12px 22px; border-radius: 10px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- PANTALLA DE CONFIGURACIÓN INICIAL -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-card">
+    <div class="setup-step">Configuración inicial</div>
+    <div class="setup-title">Bienvenido/a al sistema de<br><span style="color:var(--accent)">Acompañamiento Docente</span></div>
+    <div class="setup-sub">Configure los datos de su establecimiento. Esta información se guardará en este computador y no necesitará ingresarla nuevamente.</div>
+
+    <div class="form-row-2">
+      <div class="form-row">
+        <label class="form-label">Nombre del establecimiento</label>
+        <input type="text" class="form-control" id="setupNombreEsc" placeholder="Ej: Liceo Polivalente...">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Nombre del/la Jefe/a UTP</label>
+        <input type="text" class="form-control" id="setupNombreUtp" placeholder="Ej: Carmen Rodríguez">
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row">
+        <label class="form-label">Año escolar</label>
+        <input type="number" class="form-control" id="setupAnio" value="2025" min="2020" max="2035">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Meta de observaciones por docente</label>
+        <select class="form-control" id="setupMeta">
+          <option value="2">2 por año</option>
+          <option value="3" selected>3 por año</option>
+          <option value="4">4 por año</option>
+          <option value="5">5 por año</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="modal-divider">
+    <div class="form-label" style="margin-bottom:6px;">Personas que realizan observaciones de aula</div>
+    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;">Puede ser el/la Jefe/a UTP, Director/a, Coordinador/a u otro cargo según su establecimiento.</div>
+    <div id="setupObservadores"></div>
+    <button class="btn-add-doc" onclick="addSetupObsRow()">+ Agregar observador/a</button>
+
+    <hr class="modal-divider">
+    <div class="form-label" style="margin-bottom:10px;">Docentes del establecimiento</div>
+    <div id="setupDocentes"></div>
+    <button class="btn-add-doc" onclick="addSetupDocRow()">+ Agregar docente</button>
+
+    <div class="modal-actions" style="margin-top:24px;">
+      <button class="btn btn-primary" style="width:100%;padding:12px;" onclick="saveSetup()">Guardar y comenzar →</button>
+    </div>
+    <div style="font-size:11px;color:var(--ink-faint);text-align:center;margin-top:12px;">💾 Todo se guarda automáticamente en este navegador</div>
+  </div>
+</div>
+
+<!-- APP HEADER -->
+<header class="app-header">
+  <div>
+    <h1>Acompañamiento <span>Docente</span></h1>
+    <div class="header-meta" id="headerMeta">Cargando...</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost btn-sm" id="toggleBtn" onclick="toggleView()">👤 Vista por docente</button>
+    <a href="formulario-observacion-utp.html" target="acompanamiento" class="btn btn-ghost btn-sm" style="text-decoration:none;">📋 Formulario</a>
+    <a href="seguimiento-compromisos.html" target="acompanamiento" class="btn btn-ghost btn-sm" style="text-decoration:none;">🤝 Compromisos</a>
+    <a href="dashboard.html" target="acompanamiento" class="btn btn-ghost btn-sm" style="text-decoration:none;">📊 Dashboard</a>
+    <button class="btn btn-ghost btn-sm" onclick="openConfig()">⚙️ Configurar</button>
+    <button class="btn btn-primary" onclick="openModal()">+ Nueva visita</button>
+  </div>
+</header>
+
+<div class="app-body">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">⚠️ Alertas de seguimiento</div>
+      <div class="alert-list" id="alertList"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Observadores</div>
+      <div class="obs-filters" id="obsFiltersList"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Resumen año <span id="sidebarAnio">2025</span></div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Visitas realizadas</div></div>
+        <div class="stat-box"><div class="stat-num" id="statPend">0</div><div class="stat-label">Visitas pendientes</div></div>
+        <div class="stat-box"><div class="stat-num" id="statAlerta">0</div><div class="stat-label" style="color:var(--warn)">Sin obs. reciente</div></div>
+        <div class="stat-box"><div class="stat-num" id="statComp">0%</div><div class="stat-label">Cumplimiento</div></div>
+      </div>
+    </div>
+    <div class="sidebar-section" style="padding-bottom:10px;">
+      <div class="sidebar-title">Docentes (meta: <span id="metaLabel">3</span> obs/año)</div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Buscar docente..." id="searchInput" oninput="filterDocentes()">
+      </div>
+    </div>
+    <div class="sidebar-scroll"><div class="doc-list" id="docList"></div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div id="calView">
+      <div class="calendar-header">
+        <div class="month-nav">
+          <button class="nav-btn" onclick="changeMonth(-1)">&#8249;</button>
+          <div class="month-name" id="monthName"></div>
+          <button class="nav-btn" onclick="changeMonth(1)">&#8250;</button>
+        </div>
+        <button class="btn btn-sm" onclick="goToday()" style="background:var(--surface2);color:var(--ink);border:1px solid var(--border);">Hoy</button>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px;box-shadow:var(--shadow);">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;">Estado de observaciones por docente — haz clic para ver historial</div>
+        <div id="heatMap"></div>
+      </div>
+      <div class="calendar-grid">
+        <div class="cal-weekdays">
+          <div class="cal-weekday">Lunes</div><div class="cal-weekday">Martes</div><div class="cal-weekday">Miércoles</div><div class="cal-weekday">Jueves</div><div class="cal-weekday">Viernes</div>
+        </div>
+        <div class="cal-days" id="calDays"></div>
+      </div>
+    </div>
+
+    <div class="docente-view" id="docView">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <button class="btn btn-sm" onclick="backToCalendar()" style="background:var(--surface2);color:var(--ink);border:1px solid var(--border);">&#8592; Volver al calendario</button>
+      </div>
+      <div id="docenteContent"></div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL NUEVA VISITA -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title">Programar visita al aula</div>
+    <div class="modal-sub">Complete los datos de la observación</div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Docente</label>
+        <select class="form-control" id="fDocente"></select>
+      </div>
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Observador/a</label>
+        <select class="form-control" id="fObservador"></select>
+      </div>
+    </div>
+    <div class="form-row-2" style="margin-top:14px;">
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Fecha</label>
+        <input type="date" class="form-control" id="fFecha">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Hora</label>
+        <input type="time" class="form-control" id="fHora" value="10:00">
+      </div>
+    </div>
+    <div class="form-row-2" style="margin-top:14px;">
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Asignatura / Nivel</label>
+        <input type="text" class="form-control" id="fAsignatura" placeholder="Ej: Matemática 3°B">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Tipo de observación</label>
+        <select class="form-control" id="fTipo">
+          <option>Diagnóstica</option>
+          <option>Formativa</option>
+          <option>Foco: Gestión del aula</option>
+          <option>Foco: Didáctica</option>
+          <option>Foco: Clima</option>
+          <option>Sumativa</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveVisita()">Guardar visita</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE VISITA -->
+<div class="modal-overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="modal" id="detailModal"></div>
+</div>
+
+<!-- MODAL CONFIGURACIÓN -->
+<div class="modal-overlay" id="configOverlay" onclick="closeConfig(event)">
+  <div class="modal" style="width:520px;">
+    <div class="modal-title">Configuración del establecimiento</div>
+    <div class="modal-sub">Modifique los datos y docentes del sistema</div>
+
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Nombre del establecimiento</label>
+        <input type="text" class="form-control" id="cfgEsc">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Nombre Jefe/a UTP</label>
+        <input type="text" class="form-control" id="cfgUtp">
+      </div>
+    </div>
+    <div class="form-row-2" style="margin-top:14px;">
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Año escolar</label>
+        <input type="number" class="form-control" id="cfgAnio" min="2020" max="2035">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label class="form-label">Meta de observaciones</label>
+        <select class="form-control" id="cfgMeta">
+          <option value="2">2 por año</option>
+          <option value="3">3 por año</option>
+          <option value="4">4 por año</option>
+          <option value="5">5 por año</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="modal-divider">
+    <div class="form-label" style="margin-bottom:6px;">Observadores de aula</div>
+    <div style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;">Personas que realizan observaciones en su establecimiento.</div>
+    <div id="cfgObservadores" style="max-height:160px;overflow-y:auto;padding-right:4px;"></div>
+    <button class="btn-add-doc" onclick="addCfgObsRow()">+ Agregar observador/a</button>
+
+    <hr class="modal-divider">
+    <div class="form-label" style="margin-bottom:10px;">Docentes</div>
+    <div id="cfgDocentes" style="max-height:220px;overflow-y:auto;padding-right:4px;"></div>
+    <button class="btn-add-doc" onclick="addCfgDocRow()">+ Agregar docente</button>
+
+    <hr class="modal-divider">
+    <div style="background:var(--warn-light);border:1px solid #f5c6a8;border-radius:8px;padding:12px 14px;font-size:12px;color:var(--warn);">
+      <strong>⚠️ Zona de precaución:</strong> Eliminar un docente no borra sus visitas registradas, pero ya no aparecerá en la lista.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-warn btn-sm" onclick="resetAllData()">🗑 Borrar todos los datos</button>
+      <button class="btn btn-cancel" onclick="closeConfig()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveConfig()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// COLORES PARA AVATARES
+// =============================================
+const COLORES = ["#e07a4a","#2d5f8a","#2d6a4f","#8b2fc9","#b5451b","#0d6e8c","#8b6914","#4a3728","#5a2d82","#1a5c3a","#c45c2a","#1e4a73","#6b3a2d","#2a5c6b","#7a3d6b","#3d6b2a","#6b4a1a","#1a3d6b","#4a6b2a","#6b2a4a"];
+
+function getAvatarColor(index) { return COLORES[index % COLORES.length]; }
+
+function getSigla(nombre) {
+  const partes = nombre.trim().split(' ').filter(p => p.length > 0);
+  if(partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+  return nombre.substring(0,2).toUpperCase();
+}
+
+const OBS_COLORES_DEFAULT = ["#2d5f8a","#2d6a4f","#8b2fc9","#b5451b","#0d6e8c","#8a6400","#7a3520","#1a3a5c"];
+
+function getObsColor(obsId) {
+  const obs = OBSERVADORES.find(o => o.id === obsId || o.id === String(obsId));
+  if(obs) return { cls:'c-obs-'+obs.id, tag:'tag-obs-'+obs.id, dot: obs.color, label: obs.nombre };
+  // fallback
+  return { cls:'c-ext', tag:'tag-ext', dot:'#8b2fc9', label: obsId||'Observador' };
+}
+
+// Inyecta estilos dinámicos para chips y badges de observadores
+function injectObsStyles() {
+  let style = document.getElementById('obsStyles');
+  if(!style){ style = document.createElement('style'); style.id='obsStyles'; document.head.appendChild(style); }
+  style.textContent = OBSERVADORES.map(obs => `
+    .c-obs-${obs.id} { background: ${obs.color}22; border-left: 3px solid ${obs.color}; }
+    .c-obs-${obs.id} .chip-dot { background: ${obs.color}; }
+    .tag-obs-${obs.id} { background: ${obs.color}22; color: ${obs.color}; border: 1px solid ${obs.color}66; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  `).join('');
+}
+
+// =============================================
+// ESTADO GLOBAL
+// =============================================
+let CONFIG = {
+  escuela: "", utp: "", anio: new Date().getFullYear(), meta: 3
+};
+let DOCENTES = [];
+let VISITAS = [];
+let OBSERVADORES = [];
+let currentDate = new Date();
+let isCalView = true;
+let selectedDocId = null;
+
+const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+// =============================================
+// LOCALSTORAGE
+// =============================================
+function saveAll() {
+  localStorage.setItem('utp_config', JSON.stringify(CONFIG));
+  localStorage.setItem('utp_docentes', JSON.stringify(DOCENTES));
+  localStorage.setItem('utp_visitas', JSON.stringify(VISITAS));
+  localStorage.setItem('utp_observadores', JSON.stringify(OBSERVADORES));
+  showToast("💾 Guardado automáticamente");
+}
+
+function loadAll() {
+  const cfg  = localStorage.getItem('utp_config');
+  const docs = localStorage.getItem('utp_docentes');
+  const vis  = localStorage.getItem('utp_visitas');
+  const obs  = localStorage.getItem('utp_observadores');
+  if(cfg)  CONFIG      = JSON.parse(cfg);
+  if(docs) DOCENTES    = JSON.parse(docs);
+  if(vis)  VISITAS     = JSON.parse(vis);
+  if(obs)  OBSERVADORES = JSON.parse(obs);
+  // Migración: si no hay observadores guardados, crear los 3 por defecto
+  if(!obs || OBSERVADORES.length === 0) {
+    OBSERVADORES = [
+      { id:'obs1', nombre:'Jefe/a UTP',    color:'#2d5f8a' },
+      { id:'obs2', nombre:'Director/a',    color:'#2d6a4f' },
+      { id:'obs3', nombre:'Asesor externo',color:'#8b2fc9' },
+    ];
+  }
+}
+
+function isConfigured() {
+  return localStorage.getItem('utp_config') !== null && DOCENTES.length > 0;
+}
+
+// =============================================
+// TOAST
+// =============================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// =============================================
+// SETUP INICIAL
+// =============================================
+const ASIGNATURAS = ["Lenguaje","Matemática","Historia","Ciencias","Inglés","Ed. Física","Arte","Música","Física","Química","Biología","Tecnología","Religión","Orientación","Filosofía"];
+
+function addSetupDocRow(nombre="", asig="") {
+  const container = document.getElementById('setupDocentes');
+  const row = document.createElement('div');
+  row.className = 'docente-row';
+  row.innerHTML = `
+    <input type="text" class="form-control" placeholder="Nombre completo" value="${nombre}" style="flex:2">
+    <select class="form-control" style="flex:1.2">
+      ${ASIGNATURAS.map(a => `<option ${a===asig?'selected':''}>${a}</option>`).join('')}
+      <option ${!ASIGNATURAS.includes(asig)?'selected':''} value="${asig||'Otra'}">${asig && !ASIGNATURAS.includes(asig)?asig:'Otra'}</option>
+    </select>
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function addSetupObsRow(nombre="", color="") {
+  const container = document.getElementById('setupObservadores');
+  const idx = container.children.length;
+  const defColor = color || OBS_COLORES_DEFAULT[idx % OBS_COLORES_DEFAULT.length];
+  const row = document.createElement('div');
+  row.className = 'docente-row';
+  row.innerHTML = `
+    <input type="text" class="form-control" placeholder="Ej: Jefe/a UTP, Director/a, Coordinador/a..." value="${nombre}" style="flex:2">
+    <input type="color" value="${defColor}" style="width:38px;height:36px;border:1px solid var(--border);border-radius:7px;cursor:pointer;padding:2px;background:white;flex-shrink:0" title="Color en el calendario">
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function addCfgObsRow(nombre="", color="", id=null) {
+  const container = document.getElementById('cfgObservadores');
+  const idx = container.children.length;
+  const defColor = color || OBS_COLORES_DEFAULT[idx % OBS_COLORES_DEFAULT.length];
+  const row = document.createElement('div');
+  row.className = 'docente-row';
+  row.dataset.obsId = id || '';
+  row.innerHTML = `
+    <input type="text" class="form-control" placeholder="Nombre del observador/a o cargo..." value="${nombre}" style="flex:2">
+    <input type="color" value="${defColor}" style="width:38px;height:36px;border:1px solid var(--border);border-radius:7px;cursor:pointer;padding:2px;background:white;flex-shrink:0" title="Color en el calendario">
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function addCfgDocRow(nombre="", asig="", id=null) {
+  const container = document.getElementById('cfgDocentes');
+  const row = document.createElement('div');
+  row.className = 'docente-row';
+  row.dataset.id = id || '';
+  row.innerHTML = `
+    <input type="text" class="form-control" placeholder="Nombre completo" value="${nombre}" style="flex:2">
+    <select class="form-control" style="flex:1.2">
+      ${ASIGNATURAS.map(a => `<option ${a===asig?'selected':''}>${a}</option>`).join('')}
+      <option ${!ASIGNATURAS.includes(asig)?'selected':''} value="${asig||'Otra'}">${asig && !ASIGNATURAS.includes(asig)?asig:'Otra'}</option>
+    </select>
+    <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function getObsFromRows(selector) {
+  return Array.from(document.querySelectorAll(selector+' .docente-row')).map((row, i) => {
+    const nombre = row.querySelector('input[type=text]').value.trim();
+    const color  = row.querySelector('input[type=color]').value;
+    const id     = row.dataset.obsId || ('obs_' + Date.now() + '_' + i);
+    return nombre ? { id, nombre, color } : null;
+  }).filter(Boolean);
+}
+
+function saveSetup() {
+  const escuela = document.getElementById('setupNombreEsc').value.trim();
+  const utp = document.getElementById('setupNombreUtp').value.trim();
+  const anio = parseInt(document.getElementById('setupAnio').value);
+  const meta = parseInt(document.getElementById('setupMeta').value);
+
+  if(!escuela || !utp) { showToast("⚠️ Ingrese el nombre del establecimiento y del/la Jefe/a UTP"); return; }
+
+  const obs = getObsFromRows('#setupObservadores');
+  if(obs.length === 0) { showToast("⚠️ Agregue al menos un observador/a"); return; }
+
+  const rows = document.querySelectorAll('#setupDocentes .docente-row');
+  const docs = [];
+  rows.forEach((row, i) => {
+    const nombre = row.querySelector('input').value.trim();
+    const asig = row.querySelector('select').value;
+    if(nombre) docs.push({ id: Date.now() + i, nombre, asignatura: asig, color: getAvatarColor(i) });
+  });
+
+  if(docs.length === 0) { showToast("⚠️ Agregue al menos un docente"); return; }
+
+  CONFIG = { escuela, utp, anio, meta };
+  DOCENTES = docs;
+  OBSERVADORES = obs;
+  VISITAS = [];
+
+  saveAll();
+  document.getElementById('setupScreen').style.display = 'none';
+  initApp();
+}
+
+// =============================================
+// CONFIGURACIÓN (editar)
+// =============================================
+function openConfig() {
+  document.getElementById('cfgEsc').value  = CONFIG.escuela;
+  document.getElementById('cfgUtp').value  = CONFIG.utp;
+  document.getElementById('cfgAnio').value = CONFIG.anio;
+  document.getElementById('cfgMeta').value = CONFIG.meta;
+
+  // Observadores
+  const obsContainer = document.getElementById('cfgObservadores');
+  obsContainer.innerHTML = '';
+  OBSERVADORES.forEach(o => addCfgObsRow(o.nombre, o.color, o.id));
+
+  // Docentes
+  const container = document.getElementById('cfgDocentes');
+  container.innerHTML = '';
+  DOCENTES.forEach(d => addCfgDocRow(d.nombre, d.asignatura, d.id));
+
+  document.getElementById('configOverlay').classList.add('open');
+}
+
+function saveConfig() {
+  const escuela = document.getElementById('cfgEsc').value.trim();
+  const utp     = document.getElementById('cfgUtp').value.trim();
+  const anio    = parseInt(document.getElementById('cfgAnio').value);
+  const meta    = parseInt(document.getElementById('cfgMeta').value);
+
+  if(!escuela || !utp) { showToast("⚠️ Complete los campos obligatorios"); return; }
+
+  const obs = getObsFromRows('#cfgObservadores');
+  if(obs.length === 0) { showToast("⚠️ Debe haber al menos un observador/a"); return; }
+
+  const rows = document.querySelectorAll('#cfgDocentes .docente-row');
+  const docs = [];
+  rows.forEach((row, i) => {
+    const nombre = row.querySelector('input').value.trim();
+    const asig = row.querySelector('select').value;
+    const existingId = row.dataset.id ? parseInt(row.dataset.id) : null;
+    if(nombre) {
+      const existing = existingId ? DOCENTES.find(d => d.id === existingId) : null;
+      docs.push({ id: existingId || Date.now()+i, nombre, asignatura: asig, color: existing ? existing.color : getAvatarColor(i) });
+    }
+  });
+
+  if(docs.length === 0) { showToast("⚠️ Debe haber al menos un docente"); return; }
+
+  CONFIG = { escuela, utp, anio, meta };
+  DOCENTES = docs;
+  OBSERVADORES = obs;
+  saveAll();
+  closeConfig();
+  initApp();
+  showToast("✅ Configuración guardada");
+}
+
+function closeConfig(e) {
+  if(!e || e.target === document.getElementById('configOverlay')) document.getElementById('configOverlay').classList.remove('open');
+}
+
+function resetAllData() {
+  if(confirm("¿Está seguro/a que desea borrar TODOS los datos del sistema? Esta acción no se puede deshacer.")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// =============================================
+// INIT APP
+// =============================================
+function initApp() {
+  document.getElementById('headerMeta').textContent = CONFIG.escuela + ' · ' + CONFIG.anio + ' · Jefe/a UTP: ' + CONFIG.utp;
+  document.getElementById('sidebarAnio').textContent = CONFIG.anio;
+  document.getElementById('metaLabel').textContent = CONFIG.meta;
+  currentDate = new Date(CONFIG.anio, new Date().getMonth(), 1);
+  injectObsStyles();
+  populateObsSelect();
+  renderCalendar();
+  renderHeatmap();
+  renderSidebar();
+}
+
+function populateObsSelect() {
+  const sel = document.getElementById('fObservador');
+  if(!sel) return;
+  sel.innerHTML = OBSERVADORES.map(o => `<option value="${o.id}">${o.nombre}</option>`).join('');
+}
+
+// =============================================
+// HELPERS
+// =============================================
+function visitasPorDocente(docId) { return VISITAS.filter(v => v.docId === docId); }
+
+function getHoy() { return new Date(); }
+
+function diasSinObservacion(docId) {
+  const hoy = getHoy();
+  const vs = VISITAS.filter(v => v.docId === docId && new Date(v.fecha) <= hoy);
+  if(vs.length === 0) return 999;
+  const ultima = vs.map(v => new Date(v.fecha)).sort((a,b) => b-a)[0];
+  return Math.floor((hoy - ultima) / (1000*60*60*24));
+}
+
+// =============================================
+// CALENDARIO
+// =============================================
+function renderCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  document.getElementById("monthName").textContent = MESES[month] + " " + year;
+
+  const firstDay = new Date(year, month, 1);
+  let startDow = firstDay.getDay();
+  if(startDow === 0) startDow = 7;
+  startDow -= 1;
+
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const prevDays = new Date(year, month, 0).getDate();
+  const hoy = getHoy();
+
+  let cells = [];
+  for(let i = startDow-1; i >= 0; i--) cells.push({ d: prevDays-i, m: month-1, y: year, other: true });
+  for(let d = 1; d <= daysInMonth; d++) cells.push({ d, m: month, y: year, other: false });
+  while(cells.length % 5 !== 0) { const last = cells.length - daysInMonth - startDow + 1; cells.push({ d: last, m: month+1, y: year, other: true }); }
+
+  const container = document.getElementById("calDays");
+  container.innerHTML = "";
+
+  cells.forEach(cell => {
+    const realM = ((cell.m % 12) + 12) % 12;
+    const realY = cell.m < 0 ? cell.y - 1 : cell.m > 11 ? cell.y + 1 : cell.y;
+    const dateStr = realY + "-" + String(realM+1).padStart(2,'0') + "-" + String(cell.d).padStart(2,'0');
+    const dayVisitas = VISITAS.filter(v => v.fecha === dateStr);
+    const isToday = cell.d === hoy.getDate() && realM === hoy.getMonth() && realY === hoy.getFullYear();
+
+    const div = document.createElement("div");
+    div.className = "cal-day" + (cell.other?" other-month":"") + (isToday?" today":"");
+
+    let numHtml = isToday ? `<div class="today-marker">${cell.d}</div>` : `<div class="day-num">${cell.d}</div>`;
+    let chipsHtml = "";
+    dayVisitas.slice(0,3).forEach(v => {
+      const doc = DOCENTES.find(d => d.id === v.docId);
+      const col = getObsColor(v.obs);
+      chipsHtml += `<div class="visit-chip ${col.cls}" onclick="showDetail(${v.id})"><div class="chip-dot"></div><span>${doc ? doc.nombre.split(' ')[0] : '?'}</span></div>`;
+    });
+    if(dayVisitas.length > 3) chipsHtml += `<div class="chip-more">+${dayVisitas.length-3} más</div>`;
+
+    div.innerHTML = numHtml + chipsHtml;
+    container.appendChild(div);
+  });
+}
+
+// =============================================
+// HEATMAP
+// =============================================
+function renderHeatmap() {
+  const container = document.getElementById("heatMap");
+  container.innerHTML = "";
+  if(DOCENTES.length === 0) {
+    container.innerHTML = `<div style="font-size:13px;color:var(--ink-faint);padding:8px 0">No hay docentes configurados.</div>`;
+    return;
+  }
+  DOCENTES.forEach(doc => {
+    const count = visitasPorDocente(doc.id).length;
+    const row = document.createElement("div");
+    row.className = "heat-row";
+    row.title = "Ver historial de " + doc.nombre;
+    row.innerHTML = `<div class="heat-label">${doc.nombre}</div>
+      <div class="heat-blocks">${Array.from({length: CONFIG.meta}).map((_,i) => {
+        const cls = i < count ? (count >= CONFIG.meta ? "filled" : "warn") : "";
+        return `<div class="heat-block ${cls}"></div>`;
+      }).join('')}</div>
+      <span class="heat-count">${count}/${CONFIG.meta}</span>`;
+    row.onclick = () => showDocenteView(doc.id);
+    container.appendChild(row);
+  });
+}
+
+// =============================================
+// SIDEBAR
+// =============================================
+function renderSidebar() {
+  const hoy = getHoy();
+
+  // Observadores dinámicos
+  const obsFilters = document.getElementById('obsFiltersList');
+  obsFilters.innerHTML = OBSERVADORES.map(o => {
+    const cnt = VISITAS.filter(v => v.obs === o.id).length;
+    return `<div class="obs-filter-item">
+      <div class="obs-dot" style="background:${o.color}"></div>
+      <span class="obs-label">${o.nombre}</span>
+      <span class="obs-count">${cnt}</span>
+    </div>`;
+  }).join('');
+
+  const realizadas = VISITAS.filter(v => new Date(v.fecha) <= hoy).length;
+  const pendientes = VISITAS.filter(v => new Date(v.fecha) > hoy).length;
+  const enAlerta = DOCENTES.filter(d => diasSinObservacion(d.id) > 60).length;
+  const docConMeta = DOCENTES.filter(d => visitasPorDocente(d.id).length >= CONFIG.meta).length;
+  const comp = DOCENTES.length > 0 ? Math.round(docConMeta / DOCENTES.length * 100) : 0;
+
+  document.getElementById("statTotal").textContent = realizadas;
+  document.getElementById("statPend").textContent = pendientes;
+  document.getElementById("statAlerta").textContent = enAlerta;
+  document.getElementById("statComp").textContent = comp + "%";
+
+  const alertas = DOCENTES.filter(d => diasSinObservacion(d.id) > 60).sort((a,b) => diasSinObservacion(b.id) - diasSinObservacion(a.id)).slice(0,4);
+  const alertList = document.getElementById("alertList");
+  alertList.innerHTML = "";
+  if(alertas.length === 0) {
+    alertList.innerHTML = `<div style="font-size:12px;color:var(--ink-faint);padding:4px 0;">Sin alertas activas ✓</div>`;
+  } else {
+    alertas.forEach(doc => {
+      const dias = diasSinObservacion(doc.id);
+      const div = document.createElement("div");
+      div.className = "alert-item";
+      div.innerHTML = `<div class="alert-dot"></div><div><div class="alert-name">${doc.nombre}</div><div class="alert-sub">${dias===999?'Sin observaciones registradas':'Hace '+dias+' días sin observación'}</div></div>`;
+      div.onclick = () => showDocenteView(doc.id);
+      alertList.appendChild(div);
+    });
+  }
+  renderDocenteList();
+}
+
+function renderDocenteList(filter="") {
+  const list = document.getElementById("docList");
+  list.innerHTML = "";
+  DOCENTES.filter(d => d.nombre.toLowerCase().includes(filter.toLowerCase())).forEach(doc => {
+    const count = visitasPorDocente(doc.id).length;
+    const pct = Math.min(count / CONFIG.meta, 1);
+    const progCls = pct >= 1 ? "prog-ok" : pct >= 0.5 ? "prog-warn" : "prog-low";
+    const div = document.createElement("div");
+    div.className = "doc-item" + (selectedDocId === doc.id ? " selected" : "");
+    div.innerHTML = `<div class="doc-avatar" style="background:${doc.color}">${getSigla(doc.nombre)}</div>
+      <div><div class="doc-name">${doc.nombre}</div><div class="doc-sub">${doc.asignatura}</div></div>
+      <div class="doc-progress">
+        <div class="progress-label" style="color:${pct>=1?'var(--accent)':pct>=0.5?'var(--warn-mid)':'var(--ink-faint)'}">${count}/${CONFIG.meta}</div>
+        <div class="progress-bar-wrap"><div class="progress-bar ${progCls}" style="width:${pct*100}%"></div></div>
+      </div>`;
+    div.onclick = () => showDocenteView(doc.id);
+    list.appendChild(div);
+  });
+}
+
+function filterDocentes() { renderDocenteList(document.getElementById("searchInput").value); }
+
+// =============================================
+// DETALLE VISITA
+// =============================================
+function showDetail(visitaId) {
+  const v = VISITAS.find(x => x.id === visitaId);
+  if(!v) return;
+  const doc = DOCENTES.find(d => d.id === v.docId);
+  const col = getObsColor(v.obs);
+  const fecha = new Date(v.fecha + "T12:00:00");
+  const fechaStr = fecha.toLocaleDateString("es-CL", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+  const isPast = fecha <= getHoy();
+
+  document.getElementById("detailModal").innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:${doc?doc.color:'#888'};display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;flex-shrink:0">${doc?getSigla(doc.nombre):'?'}</div>
+      <div><div class="modal-title" style="font-size:18px;">${doc?doc.nombre:'Docente eliminado'}</div><div style="font-size:13px;color:var(--ink-soft)">${doc?doc.asignatura:''}</div></div>
+      <span style="margin-left:auto;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:${isPast?'#e8f5ee':'#e8eef5'};color:${isPast?'#2d6a4f':'#1a3a5c'}">${isPast?'✓ Realizada':'⏰ Programada'}</span>
+    </div>
+    <div class="detail-field"><div class="detail-icon">📅</div><div><div class="detail-key">Fecha y hora</div><div class="detail-val">${fechaStr} · ${v.hora} hrs</div></div></div>
+    <div class="detail-field"><div class="detail-icon">📚</div><div><div class="detail-key">Asignatura / Nivel</div><div class="detail-val">${v.asig}</div></div></div>
+    <div class="detail-field"><div class="detail-icon">🔍</div><div><div class="detail-key">Tipo de observación</div><div class="detail-val">${v.tipo}</div></div></div>
+    <div class="detail-field"><div class="detail-icon">👤</div><div><div class="detail-key">Observador/a</div><div class="detail-val"><span class="badge ${col.tag}">${col.label}</span></div></div></div>
+    <div class="modal-actions">
+      <button class="btn btn-warn btn-sm" onclick="deleteVisita(${visitaId})">🗑 Eliminar visita</button>
+      <button class="btn btn-cancel" onclick="closeDetail()">Cerrar</button>
+    </div>`;
+  document.getElementById("detailOverlay").classList.add("open");
+}
+
+function deleteVisita(id) {
+  if(confirm("¿Eliminar esta visita?")) {
+    VISITAS = VISITAS.filter(v => v.id !== id);
+    saveAll();
+    closeDetail();
+    renderCalendar(); renderHeatmap(); renderSidebar();
+    if(!isCalView && selectedDocId) showDocenteView(selectedDocId);
+  }
+}
+
+function closeDetail(e) {
+  if(!e || e.target === document.getElementById('detailOverlay')) document.getElementById('detailOverlay').classList.remove('open');
+}
+
+// =============================================
+// VISTA DOCENTE
+// =============================================
+function showDocenteView(docId) {
+  selectedDocId = docId;
+  const doc = DOCENTES.find(d => d.id === docId);
+  if(!doc) return;
+  const dvs = visitasPorDocente(docId).sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+  const count = dvs.length;
+  const dias = diasSinObservacion(docId);
+  const hoy = getHoy();
+
+  let timelineHtml = dvs.length === 0
+    ? `<div class="empty-state"><h3>Sin observaciones registradas</h3><p>Este docente aún no tiene visitas al aula en el año.</p></div>`
+    : dvs.map(v => {
+        const col = getObsColor(v.obs);
+        const fecha = new Date(v.fecha + "T12:00:00");
+        const fechaStr = fecha.toLocaleDateString("es-CL", { day:"numeric", month:"long", year:"numeric" });
+        const isPast = fecha <= hoy;
+        return `<div class="timeline-item" onclick="showDetail(${v.id})">
+          <div class="timeline-dot" style="background:${col.dot}"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div class="timeline-date">${fechaStr} · ${v.hora} hrs</div>
+              <div class="timeline-name">${v.tipo}</div>
+              <div class="timeline-obs">${v.asig}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <span class="badge ${col.tag}">${col.label}</span>
+              <span style="font-size:11px;color:var(--ink-faint)">${isPast?'Realizada':'Programada'}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+  document.getElementById("docenteContent").innerHTML = `
+    <div class="docente-header">
+      <div class="docente-avatar-lg" style="background:${doc.color}">${getSigla(doc.nombre)}</div>
+      <div class="docente-info"><h2>${doc.nombre}</h2><p>${doc.asignatura}</p></div>
+      <div class="docente-stats">
+        <div class="docente-stat"><div class="docente-stat-num">${count}</div><div class="docente-stat-label">observaciones</div></div>
+        <div class="docente-stat"><div class="docente-stat-num" style="color:${CONFIG.meta-count>0?'var(--warn)':'var(--accent)'}">${Math.max(0,CONFIG.meta-count)}</div><div class="docente-stat-label">pendientes</div></div>
+        <div class="docente-stat"><div class="docente-stat-num" style="color:${dias>60?'var(--warn)':'var(--ink)'}">${dias===999?'—':dias+'d'}</div><div class="docente-stat-label">días última obs.</div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-family:'DM Serif Display',serif;font-size:20px;">Historial de acompañamiento</div>
+      <button class="btn btn-primary btn-sm" onclick="openModalFor(${docId})">+ Programar visita</button>
+    </div>
+    <div class="timeline">${timelineHtml}</div>`;
+
+  if(isCalView) {
+    document.getElementById("calView").classList.add("hidden");
+    document.getElementById("docView").classList.add("active");
+    document.getElementById("toggleBtn").textContent = "📅 Ver calendario";
+    isCalView = false;
+  }
+  renderDocenteList();
+}
+
+function backToCalendar() {
+  isCalView = true; selectedDocId = null;
+  document.getElementById("calView").classList.remove("hidden");
+  document.getElementById("docView").classList.remove("active");
+  document.getElementById("toggleBtn").textContent = "👤 Vista por docente";
+  renderDocenteList();
+}
+
+function toggleView() {
+  if(isCalView) { if(DOCENTES.length > 0) showDocenteView(DOCENTES[0].id); }
+  else backToCalendar();
+}
+
+// =============================================
+// MODAL NUEVA VISITA
+// =============================================
+function openModal() {
+  const sel = document.getElementById("fDocente");
+  sel.innerHTML = DOCENTES.map(d => `<option value="${d.id}">${d.nombre} (${d.asignatura})</option>`).join('');
+  if(selectedDocId) sel.value = selectedDocId;
+  const hoy = getHoy();
+  document.getElementById("fFecha").value = hoy.toISOString().split("T")[0];
+  document.getElementById("modalOverlay").classList.add("open");
+}
+function openModalFor(docId) { selectedDocId = docId; openModal(); }
+function closeModal(e) {
+  if(!e || e.target === document.getElementById("modalOverlay")) document.getElementById("modalOverlay").classList.remove("open");
+}
+
+function saveVisita() {
+  const docId = parseInt(document.getElementById("fDocente").value);
+  const obs = document.getElementById("fObservador").value;
+  const fecha = document.getElementById("fFecha").value;
+  const hora = document.getElementById("fHora").value;
+  const asig = document.getElementById("fAsignatura").value.trim() || "Sin especificar";
+  const tipo = document.getElementById("fTipo").value;
+  if(!fecha) { showToast("⚠️ Seleccione una fecha"); return; }
+
+  const newId = VISITAS.length > 0 ? Math.max(...VISITAS.map(v=>v.id)) + 1 : 1;
+  VISITAS.push({ id:newId, docId, obs, fecha, hora, asig, tipo });
+  saveAll();
+  closeModal();
+  renderCalendar(); renderHeatmap(); renderSidebar();
+  if(!isCalView && selectedDocId === docId) showDocenteView(docId);
+  showToast("✅ Visita guardada");
+}
+
+// =============================================
+// NAVEGACIÓN
+// =============================================
+function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); }
+function goToday() { currentDate = new Date(CONFIG.anio, new Date().getMonth(), 1); renderCalendar(); }
+
+// =============================================
+// ARRANQUE
+// =============================================
+loadAll();
+
+if(isConfigured()) {
+  document.getElementById('setupScreen').style.display = 'none';
+  initApp();
+} else {
+  // Agregar filas iniciales en setup
+  for(let i = 0; i < 3; i++) addSetupDocRow();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pauta de Acompañamiento Docente</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--white:#fff;--ink:#1c1a17;--ink-soft:#5c5850;--ink-faint:#aaa49b;--border:#ddd9d0;--obs:#2d6a4f;--obs-bg:#eaf5ee;--obs-bd:#b0d9c0;--par:#7a5a1a;--par-bg:#fdf4e0;--par-bd:#e8d090;--aus:#7a2828;--aus-bg:#fdeaea;--aus-bd:#e8b0b0;--f1:#1a3d5c;--f2:#2d5a3d;--f3:#5a2d6b;--sh:0 2px 14px rgba(28,26,23,.07);--shl:0 8px 36px rgba(28,26,23,.13);--r:11px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
+.topbar{background:var(--ink);color:#fff;padding:13px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{font-family:'Lora',serif;font-size:17px;font-weight:500}.brand em{color:#a8d5b5;font-style:italic}
+.tbr{display:flex;gap:8px;align-items:center}
+.pw{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.1)}
+.pf{height:100%;background:#a8d5b5;transition:width .4s;width:0}
+.btn{padding:7px 15px;border-radius:7px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:600;transition:all .17s}
+.bp{background:#2d6a4f;color:#fff}.bp:hover{background:#245a41;transform:translateY(-1px)}
+.bg{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}.bg:hover{background:rgba(255,255,255,.18)}
+.bo{background:#fff;color:var(--ink);border:1px solid var(--border)}.bo:hover{background:var(--bg)}
+.bsm{padding:5px 12px;font-size:12px}.bdng{background:#7a1e1e;color:#fff}
+.page{max-width:820px;margin:0 auto;padding:30px 18px 90px}
+.card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:22px 24px;margin-bottom:20px;box-shadow:var(--sh)}
+.ctit{font-family:'Lora',serif;font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fl{font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.fc{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:7px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);outline:none;transition:border-color .15s,background .15s}
+.fc:focus{border-color:#52b788;background:#fff}
+.tipo-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.tc{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--ink-soft);transition:all .15s}
+.tc.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.leybar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;margin-bottom:20px;box-shadow:var(--sh)}
+.li{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.ld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rf{display:flex;gap:10px;margin-bottom:20px}
+.rfi{flex:1;border-radius:9px;padding:12px 14px}
+.rfn{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:6px}
+.rm{display:flex;gap:3px;flex-wrap:wrap}
+.rmd{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3)}
+.rmd.obs{background:rgba(255,255,255,.9);border-color:transparent}
+.rmd.par{background:rgba(255,255,255,.5);border-color:transparent}
+.rmd.aus{background:rgba(255,255,255,.1)}
+.fcard{border-radius:var(--r);border:1px solid var(--border);margin-bottom:20px;overflow:hidden;box-shadow:var(--sh)}
+.fhdr{padding:15px 22px;display:flex;align-items:center;gap:14px;cursor:pointer;user-select:none;transition:filter .15s}
+.fhdr:hover{filter:brightness(.94)}
+.fico{font-size:22px;flex-shrink:0}
+.finf{flex:1;color:#fff}
+.fetq{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;opacity:.75;margin-bottom:2px}
+.fnom{font-family:'Lora',serif;font-size:16px;font-weight:500}
+.fres{font-size:11px;opacity:.8;margin-top:2px}
+.fchv{color:rgba(255,255,255,.7);font-size:20px;transition:transform .25s}
+.fchv.open{transform:rotate(180deg)}
+.fbdy{display:none;background:#fff}
+.fbdy.open{display:block}
+.ir{padding:16px 22px;border-bottom:1px solid var(--border)}
+.ir:last-child{border-bottom:none}
+.itop{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.icod{font-size:10px;font-weight:700;color:var(--ink-faint);background:var(--bg);padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.itxt{font-size:13px;line-height:1.55;flex:1}
+.e3{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.eb{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600;color:var(--ink-soft);transition:all .17s;white-space:nowrap}
+.eb:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.09)}
+.ed{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .15s}
+.eb[data-v="obs"].sel{background:var(--obs-bg);border-color:var(--obs-bd);color:var(--obs)}
+.eb[data-v="obs"].sel .ed{background:var(--obs)}
+.eb[data-v="par"].sel{background:var(--par-bg);border-color:var(--par-bd);color:var(--par)}
+.eb[data-v="par"].sel .ed{background:var(--par)}
+.eb[data-v="aus"].sel{background:var(--aus-bg);border-color:var(--aus-bd);color:var(--aus)}
+.eb[data-v="aus"].sel .ed{background:var(--aus)}
+.ctog{font-size:11px;font-weight:600;color:var(--ink-faint);cursor:pointer;background:none;border:none;font-family:'Source Sans 3',sans-serif;padding:0;transition:color .15s;display:flex;align-items:center;gap:4px}
+.ctog:hover{color:var(--ink-soft)}
+.ca{display:none;margin-top:8px}
+.ca.open{display:block}
+.cta{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);resize:vertical;min-height:68px;outline:none;transition:border-color .15s,background .15s;line-height:1.55}
+.cta:focus{border-color:#52b788;background:#fff}
+.ta{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);resize:vertical;min-height:90px;outline:none;transition:border-color .15s,background .15s;line-height:1.6}
+.ta:focus{border-color:#52b788;background:#fff}
+.cr{display:flex;gap:8px;margin-bottom:9px;align-items:flex-start}
+.cn{width:22px;height:22px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:7px}
+.cf{flex:1;display:grid;grid-template-columns:1fr 140px;gap:8px}
+.brm{width:30px;height:34px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;color:var(--ink-faint);font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.brm:hover{background:var(--aus-bg);border-color:var(--aus-bd);color:var(--aus)}
+.badd{width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:7px;background:transparent;cursor:pointer;color:var(--ink-soft);font-family:'Source Sans 3',sans-serif;font-size:13px;transition:all .15s;margin-top:4px}
+.badd:hover{border-color:#52b788;color:var(--obs);background:var(--obs-bg)}
+.fw{border:1.5px solid var(--border);border-radius:8px;background:#fff;position:relative;overflow:hidden}
+canvas{display:block;cursor:crosshair;touch-action:none;width:100%}
+.fhint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--ink-faint);pointer-events:none;text-align:center;transition:opacity .2s}
+.fclear{position:absolute;top:8px;right:8px}
+.ov{display:none;position:fixed;inset:0;background:rgba(28,26,23,.52);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:26px 28px;width:580px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:var(--shl);animation:pi .2s ease}
+@keyframes pi{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.mtit{font-family:'Lora',serif;font-size:20px;margin-bottom:4px}
+.msub{font-size:13px;color:var(--ink-soft);margin-bottom:18px}
+.mac{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.hi{border:1px solid var(--border);border-radius:8px;padding:13px 15px;margin-bottom:9px;cursor:pointer;transition:all .15s}
+.hi:hover{border-color:#52b788;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.hf{font-size:11px;color:var(--ink-faint);font-weight:600;margin-bottom:3px}
+.hd{font-size:14px;font-weight:600}
+.hm{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.hcs{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
+.hc{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.hco{background:var(--obs-bg);color:var(--obs)}.hcp{background:var(--par-bg);color:var(--par)}.hca{background:var(--aus-bg);color:var(--aus)}
+.emp{text-align:center;padding:40px 16px}
+.emp h3{font-family:'Lora',serif;font-size:18px;color:var(--ink-soft);margin-bottom:6px}
+.emp p{color:var(--ink-faint);font-size:13px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:opacity .28s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+@media print{.topbar,.btn,.np,.ctog,.brm,.badd,.fclear{display:none!important}body{background:#fff}.fbdy{display:block!important}.page{padding:0;max-width:100%}.card,.fcard{box-shadow:none;break-inside:avoid;border:1px solid #ccc}.ca{display:block!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div style="position:relative">
+    <div class="brand">Acompañamiento Docente · <em>Pauta de Observación de Aula</em></div>
+  </div>
+  <div class="tbr">
+    <a href="index.html" class="btn bg bsm np" target="acompanamiento" style="text-decoration:none;">📅 Calendario</a>
+    <button class="btn bg bsm np" onclick="openHist()">📋 Registros</button>
+    <button class="btn bg bsm np" onclick="window.print()">🖨 Imprimir / PDF</button>
+    <button class="btn bp bsm" onclick="guardar()">💾 Guardar</button>
+  </div>
+  <div class="pw"><div class="pf" id="pf"></div></div>
+</header>
+
+<div class="page">
+  <div class="rf">
+    <div class="rfi" style="background:var(--f1)"><div class="rfn">Interacción</div><div class="rm" id="mA"></div></div>
+    <div class="rfi" style="background:var(--f2)"><div class="rfn">Didáctica</div><div class="rm" id="mB"></div></div>
+    <div class="rfi" style="background:var(--f3)"><div class="rfn">Clima de Aula</div><div class="rm" id="mC"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">📋 Identificación de la observación</div>
+    <div class="g3">
+      <div><div class="fl">Docente observado/a</div><input type="text" class="fc" id="fDoc" placeholder="Nombre completo" oninput="upP()"></div>
+      <div><div class="fl">Asignatura</div><input type="text" class="fc" id="fAsig" placeholder="Ej: Lenguaje"></div>
+      <div><div class="fl">Nivel / Curso</div><input type="text" class="fc" id="fNivel" placeholder="Ej: 2° Medio A"></div>
+    </div>
+    <div class="g2" style="margin-top:12px">
+      <div><div class="fl">Fecha</div><input type="date" class="fc" id="fFecha"></div>
+      <div><div class="fl">Hora inicio → término</div><input type="text" class="fc" id="fHora" placeholder="09:00 → 09:45"></div>
+    </div>
+    <div style="margin-top:12px"><div class="fl">Observador/a</div><input type="text" class="fc" id="fObs" placeholder="Nombre y cargo"></div>
+    <div style="margin-top:12px">
+      <div class="fl" style="margin-bottom:7px">Foco de la observación</div>
+      <div class="tipo-row">
+        <button class="tc sel" onclick="selT(this)">General</button>
+        <button class="tc" onclick="selT(this)">Interacción docente-estudiante</button>
+        <button class="tc" onclick="selT(this)">Estrategias didácticas</button>
+        <button class="tc" onclick="selT(this)">Clima de aula</button>
+        <button class="tc" onclick="selT(this)">Gestión del tiempo</button>
+        <button class="tc" onclick="selT(this)">Atención a la diversidad</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="leybar">
+    <span style="font-size:12px;font-weight:600;color:var(--ink-soft)">Niveles de observación:</span>
+    <div class="li"><div class="ld" style="background:var(--obs)"></div><span style="color:var(--obs)">Claramente observado</span></div>
+    <div class="li"><div class="ld" style="background:var(--par)"></div><span style="color:var(--par)">Parcialmente observado</span></div>
+    <div class="li"><div class="ld" style="background:var(--aus)"></div><span style="color:var(--aus)">Ausente</span></div>
+    <span style="font-size:11px;color:var(--ink-faint);margin-left:auto">Cada indicador tiene espacio para comentar</span>
+  </div>
+
+  <div id="FC"></div>
+
+  <div class="card">
+    <div class="ctit">✨ Fortalezas de la práctica observada</div>
+    <p style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">Reconocer lo que se hace bien es parte esencial del desarrollo profesional. Cite ejemplos concretos.</p>
+    <textarea class="ta" id="fF" placeholder="Describa con ejemplos concretos los momentos o prácticas que le parecieron especialmente positivos..." oninput="upP()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="ctit">🌱 Oportunidades de desarrollo profesional</div>
+    <p style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">Redactadas como oportunidades de crecimiento. Incluya sugerencias concretas cuando sea posible.</p>
+    <textarea class="ta" id="fD" placeholder="Describa los aspectos que podrían desarrollarse, sugiriendo estrategias o recursos de apoyo..."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="ctit">🤝 Acuerdos para el próximo período</div>
+    <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px">Compromisos concretos acordados entre observador/a y docente, con fecha de seguimiento.</p>
+    <div id="CL"></div>
+    <button class="badd" onclick="addC()">+ Agregar acuerdo</button>
+  </div>
+
+  <div class="card">
+    <div class="ctit">📝 Reflexión y contexto</div>
+    <textarea class="ta" id="fR" placeholder="Contexto de la clase, características del grupo, notas de la conversación de retroalimentación..." rows="3"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="ctit">✍️ Conformidad del/la docente</div>
+    <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px">La firma indica que el/la docente ha recibido y tomado conocimiento de esta pauta. <strong>No es una calificación</strong> — es el registro de un proceso formativo conjunto.</p>
+    <div class="fw">
+      <canvas id="fc" height="120"></canvas>
+      <div class="fhint" id="fh">Firme aquí con el mouse o el dedo</div>
+      <button class="btn bo bsm fclear np" onclick="clrF()">✕ Limpiar</button>
+    </div>
+    <div class="g2" style="margin-top:12px">
+      <div><div class="fl">Nombre docente</div><input type="text" class="fc" id="fND" placeholder="Nombre completo"></div>
+      <div><div class="fl">Fecha de retroalimentación</div><input type="date" class="fc" id="fFR"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="HO" onclick="clH(event)">
+  <div class="modal">
+    <div class="mtit">📋 Registros guardados</div>
+    <div class="msub">Haz clic en un registro para cargarlo.</div>
+    <div id="HL"></div>
+    <div class="mac">
+      <button class="btn bdng bsm" onclick="delAll()">🗑 Borrar todos</button>
+      <button class="btn bo bsm" onclick="clH()">Cerrar</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const FD=[
+  {id:'A',color:'#1a3d5c',ico:'🤝',nom:'Interacción Docente-Estudiante',ref:'MBE Dom. A y B',
+   inds:[
+    {id:'A1',t:'El/la docente genera instancias de diálogo genuino, escuchando y valorando las respuestas e ideas de sus estudiantes.'},
+    {id:'A2',t:'Formula preguntas abiertas que invitan a pensar, reflexionar y argumentar, más allá de respuestas de memoria.'},
+    {id:'A3',t:'Reconoce y valora los aportes de los estudiantes, generando confianza para participar sin temor al error.'},
+    {id:'A4',t:'Brinda retroalimentación oportuna y constructiva que orienta al estudiante en su proceso de aprendizaje.'},
+    {id:'A5',t:'Demuestra conocimiento de sus estudiantes: sus intereses, contextos y formas de aprender.'},
+   ]},
+  {id:'B',color:'#2d5a3d',ico:'🎯',nom:'Estrategias Didácticas',ref:'MBE Dom. A y C',
+   inds:[
+    {id:'B1',t:'Los objetivos de aprendizaje son comunicados con claridad y los estudiantes comprenden qué se espera de ellos.'},
+    {id:'B2',t:'Las actividades son pertinentes al objetivo, variadas y promueven el aprendizaje activo de los estudiantes.'},
+    {id:'B3',t:'Conecta los contenidos con conocimientos previos, experiencias cotidianas o contextos significativos.'},
+    {id:'B4',t:'Utiliza recursos y materiales que apoyan la comprensión y despiertan el interés de los estudiantes.'},
+    {id:'B5',t:'Monitorea la comprensión durante la clase y ajusta su enseñanza cuando detecta dificultades.'},
+    {id:'B6',t:'Considera distintos ritmos y necesidades, ofreciendo apoyo diferenciado cuando es necesario.'},
+   ]},
+  {id:'C',color:'#5a2d6b',ico:'🌿',nom:'Clima de Aula',ref:'MBE Dom. B',
+   inds:[
+    {id:'C1',t:'El ambiente es seguro y respetuoso: los estudiantes se tratan bien entre sí y con el/la docente.'},
+    {id:'C2',t:'Las normas de convivencia son claras y se aplican de manera consistente y justa.'},
+    {id:'C3',t:'Los estudiantes muestran disposición al aprendizaje: participan, se concentran y se involucran.'},
+    {id:'C4',t:'El/la docente gestiona el tiempo eficientemente, minimizando los momentos de espera o desconexión.'},
+    {id:'C5',t:'Promueve un clima inclusivo donde todos los estudiantes se sienten valorados y parte de la clase.'},
+   ]}
+];
+
+let R={},CO={},firma=null,drw=false,ctx=null,cn=0;
+
+function rF(){
+  const c=document.getElementById('FC');c.innerHTML='';
+  FD.forEach(f=>{
+    const d=document.createElement('div');d.className='fcard';d.style.borderTop='4px solid '+f.color;
+    const ct=cF(f),rs=ct.t>0?ct.o+' obs. · '+ct.p+' parc. · '+ct.a+' aus.':'Sin respuestas aún';
+    d.innerHTML=`<div class="fhdr" style="background:${f.color}" onclick="tgF('fb${f.id}',this)">
+      <div class="fico">${f.ico}</div>
+      <div class="finf"><div class="fetq">Foco ${f.id} · ${f.ref}</div><div class="fnom">${f.nom}</div><div class="fres" id="rs${f.id}">${rs}</div></div>
+      <div class="fchv open">▾</div></div>
+    <div class="fbdy open" id="fb${f.id}">${f.inds.map(i=>rI(i)).join('')}</div>`;
+    c.appendChild(d);
+  });
+}
+
+function rI(i){
+  const v=R[i.id]||null,co=CO[i.id]||'',hc=co.trim().length>0;
+  return `<div class="ir" id="rw${i.id}">
+    <div class="itop"><span class="icod">${i.id}</span><div class="itxt">${i.t}</div></div>
+    <div class="e3">
+      <button class="eb${v==='obs'?' sel':''}" data-v="obs" onclick="sR('${i.id}','obs',this)"><span class="ed"></span>Claramente observado</button>
+      <button class="eb${v==='par'?' sel':''}" data-v="par" onclick="sR('${i.id}','par',this)"><span class="ed"></span>Parcialmente observado</button>
+      <button class="eb${v==='aus'?' sel':''}" data-v="aus" onclick="sR('${i.id}','aus',this)"><span class="ed"></span>Ausente</button>
+    </div>
+    <button class="ctog" onclick="tgC('ca${i.id}',this)">${hc?'💬 Ver comentario':'+ Agregar comentario'}</button>
+    <div class="ca${hc?' open':''}" id="ca${i.id}">
+      <textarea class="cta" placeholder="Comentario específico..." oninput="svC('${i.id}',this.value)">${co}</textarea>
+    </div></div>`;
+}
+
+function tgF(id,h){document.getElementById(id).classList.toggle('open');h.querySelector('.fchv').classList.toggle('open');}
+function tgC(id,b){const a=document.getElementById(id);a.classList.toggle('open');if(a.classList.contains('open')){a.querySelector('textarea').focus();b.textContent='▲ Ocultar';}else{const v=a.querySelector('textarea').value.trim();b.textContent=v?'💬 Ver comentario':'+ Agregar comentario';}}
+
+function sR(id,v,b){
+  if(R[id]===v){delete R[id];b.classList.remove('sel');}
+  else{R[id]=v;b.closest('.e3').querySelectorAll('.eb').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');}
+  upM();upRS();upP();
+}
+function svC(id,v){CO[id]=v;}
+
+function cF(f){let o=0,p=0,a=0;f.inds.forEach(i=>{if(R[i.id]==='obs')o++;else if(R[i.id]==='par')p++;else if(R[i.id]==='aus')a++;});return{o,p,a,t:o+p+a};}
+
+function upM(){
+  FD.forEach(f=>{
+    const el=document.getElementById('m'+f.id);if(!el)return;
+    el.innerHTML=f.inds.map(i=>{const v=R[i.id];return`<div class="rmd${v?' '+v:''}" title="${i.id}"></div>`;}).join('');
+  });
+}
+function upRS(){
+  FD.forEach(f=>{const el=document.getElementById('rs'+f.id);if(!el)return;const c=cF(f);el.textContent=c.t>0?c.o+' obs. · '+c.p+' parc. · '+c.a+' aus.':'Sin respuestas aún';});
+}
+function upP(){
+  const tot=FD.reduce((s,f)=>s+f.inds.length,0),resp=Object.keys(R).length;
+  const doc=document.getElementById('fDoc').value.trim().length>0,ft=document.getElementById('fF').value.trim().length>0;
+  document.getElementById('pf').style.width=Math.min(Math.round(((resp/tot)*.65+(doc?.2:0)+(ft?.15:0))*100),100)+'%';
+}
+function selT(b){document.querySelectorAll('.tc').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');}
+function getT(){const a=document.querySelector('.tc.sel');return a?a.textContent:'General';}
+
+function addC(t='',p=''){cn++;const l=document.getElementById('CL'),n=l.children.length+1,r=document.createElement('div');r.className='cr';
+  r.innerHTML=`<div class="cn">${n}</div><div class="cf"><input type="text" class="fc" placeholder="Descripción del acuerdo..." value="${t}"><input type="date" class="fc" value="${p}" title="Fecha de seguimiento"></div><button class="brm" onclick="rmC(this)">×</button>`;
+  l.appendChild(r);}
+function rmC(b){b.closest('.cr').remove();document.querySelectorAll('#CL .cn').forEach((e,i)=>e.textContent=i+1);}
+function getCs(){return Array.from(document.querySelectorAll('#CL .cr')).map(r=>({t:r.querySelector('input[type=text]').value,p:r.querySelector('input[type=date]').value})).filter(c=>c.t.trim());}
+
+function initF(){
+  const cv=document.getElementById('fc');cv.width=cv.offsetWidth||760;
+  ctx=cv.getContext('2d');ctx.strokeStyle='#1c1a17';ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';
+  const h=document.getElementById('fh'),ps=(e,c)=>{const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;return[(e.clientX-r.left)*sx,(e.clientY-r.top)*sy];};
+  cv.addEventListener('mousedown',e=>{drw=true;ctx.beginPath();ctx.moveTo(...ps(e,cv));h.style.opacity=0;firma=true;});
+  cv.addEventListener('mousemove',e=>{if(!drw)return;ctx.lineTo(...ps(e,cv));ctx.stroke();});
+  cv.addEventListener('mouseup',()=>drw=false);cv.addEventListener('mouseleave',()=>drw=false);
+  cv.addEventListener('touchstart',e=>{e.preventDefault();drw=true;ctx.beginPath();ctx.moveTo(...ps(e.touches[0],cv));h.style.opacity=0;firma=true;});
+  cv.addEventListener('touchmove',e=>{e.preventDefault();if(!drw)return;ctx.lineTo(...ps(e.touches[0],cv));ctx.stroke();});
+  cv.addEventListener('touchend',()=>drw=false);
+}
+function clrF(){const cv=document.getElementById('fc');ctx.clearRect(0,0,cv.width,120);firma=null;document.getElementById('fh').style.opacity=1;}
+
+function guardar(){
+  const d=document.getElementById('fDoc').value.trim();if(!d){toast('⚠️ Ingrese el nombre del docente');return;}
+  const reg={id:Date.now(),doc:d,asig:document.getElementById('fAsig').value,nivel:document.getElementById('fNivel').value,
+    fecha:document.getElementById('fFecha').value,hora:document.getElementById('fHora').value,obs:document.getElementById('fObs').value,
+    tipo:getT(),R:{...R},CO:{...CO},fort:document.getElementById('fF').value,dev:document.getElementById('fD').value,
+    comps:getCs(),ref:document.getElementById('fR').value,
+    firma:firma?document.getElementById('fc').toDataURL():null,
+    nd:document.getElementById('fND').value,fr:document.getElementById('fFR').value};
+  const all=JSON.parse(localStorage.getItem('utp_obs4')||'[]');all.push(reg);localStorage.setItem('utp_obs4',JSON.stringify(all));
+  toast('✅ Observación guardada correctamente');
+}
+
+function openHist(){
+  const all=JSON.parse(localStorage.getItem('utp_obs4')||'[]').reverse(),l=document.getElementById('HL');
+  if(!all.length){l.innerHTML='<div class="emp"><h3>Sin registros</h3><p>Las observaciones guardadas aparecerán aquí.</p></div>';}
+  else{l.innerHTML=all.map(r=>{
+    const c=cntR(r.R||{}),f=r.fecha?new Date(r.fecha+'T12:00').toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'numeric'}):'Sin fecha';
+    return`<div class="hi" onclick="load(${r.id})"><div class="hf">${f} · ${r.tipo||''}</div><div class="hd">${r.doc}</div>
+      <div class="hm">${[r.asig,r.nivel,r.obs?'Obs: '+r.obs:''].filter(Boolean).join(' · ')}</div>
+      <div class="hcs">${c.o>0?`<span class="hc hco">✓ ${c.o} obs.</span>`:''}${c.p>0?`<span class="hc hcp">◐ ${c.p} parc.</span>`:''}${c.a>0?`<span class="hc hca">○ ${c.a} aus.</span>`:''}</div></div>`;
+  }).join('');}
+  document.getElementById('HO').classList.add('open');
+}
+function cntR(r){let o=0,p=0,a=0;Object.values(r).forEach(v=>{if(v==='obs')o++;else if(v==='par')p++;else if(v==='aus')a++;});return{o,p,a};}
+
+function load(id){
+  const all=JSON.parse(localStorage.getItem('utp_obs4')||'[]'),r=all.find(x=>x.id===id);if(!r)return;
+  document.getElementById('fDoc').value=r.doc||'';document.getElementById('fAsig').value=r.asig||'';
+  document.getElementById('fNivel').value=r.nivel||'';document.getElementById('fFecha').value=r.fecha||'';
+  document.getElementById('fHora').value=r.hora||'';document.getElementById('fObs').value=r.obs||'';
+  document.getElementById('fF').value=r.fort||'';document.getElementById('fD').value=r.dev||'';
+  document.getElementById('fR').value=r.ref||'';document.getElementById('fND').value=r.nd||'';
+  document.getElementById('fFR').value=r.fr||'';
+  document.querySelectorAll('.tc').forEach(b=>b.classList.toggle('sel',b.textContent===r.tipo));
+  R={...r.R||{}};CO={...r.CO||{}};rF();upM();upRS();
+  document.getElementById('CL').innerHTML='';cn=0;(r.comps||[]).forEach(c=>addC(c.t,c.p));
+  if(r.firma){const img=new Image();img.onload=()=>{const cv=document.getElementById('fc');ctx.clearRect(0,0,cv.width,120);ctx.drawImage(img,0,0);firma=true;document.getElementById('fh').style.opacity=0;};img.src=r.firma;}
+  else clrF();
+  clH();toast('📋 Registro cargado');window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function delAll(){if(confirm('¿Borrar TODOS los registros?')){localStorage.removeItem('utp_obs4');openHist();toast('🗑 Eliminados');}}
+function clH(e){if(!e||e.target===document.getElementById('HO'))document.getElementById('HO').classList.remove('open');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  rF();upM();initF();addC();
+  const h=new Date().toISOString().split('T')[0];
+  document.getElementById('fFecha').value=h;document.getElementById('fFR').value=h;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Acompañamiento Docente</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f5f0;--white:#fff;--ink:#1c1a17;--ink-soft:#5c5850;--ink-faint:#a8a39a;--border:#ddd9d0;
+  --shadow:0 2px 14px rgba(28,26,23,.07);--shadow-lg:0 8px 36px rgba(28,26,23,.13);--radius:11px;
+  --green:#2d6a4f;--green-bg:#e8f5ee;--green-bd:#a8d8bc;
+  --yellow:#8a6400;--yellow-bg:#fdf6e0;--yellow-bd:#e0c96a;
+  --red:#7a2020;--red-bg:#fdeaea;--red-bd:#e0a8a8;
+  --blue:#1a3a5c;--blue-bg:#e8eef5;
+  --c1:#2d6a4f;--c2:#1a3a5c;--c3:#7a3520;--c4:#5a2d6b;--c5:#8a6400;--c6:#0d6e8c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+
+/* TOPBAR */
+.topbar{background:var(--ink);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+.brand{font-family:'Lora',serif;font-size:18px;font-weight:500}.brand em{color:#a8d5b5;font-style:normal}
+.tbr{display:flex;gap:8px;align-items:center}
+.btn{padding:7px 15px;border-radius:7px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:600;transition:all .17s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.bp{background:#2d6a4f;color:#fff}.bp:hover{background:#245a41;transform:translateY(-1px)}
+.bg{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}.bg:hover{background:rgba(255,255,255,.18)}
+.bo{background:#fff;color:var(--ink);border:1px solid var(--border)}.bo:hover{background:var(--bg)}
+.bsm{padding:5px 12px;font-size:12px}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:28px 18px 80px}
+.section-title{font-family:'Lora',serif;font-size:13px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;margin-top:28px}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:8px}
+.kpi{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:16px 14px;box-shadow:var(--shadow);text-align:center;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.kgreen::before{background:var(--green)}
+.kpi.kyellow::before{background:var(--yellow)}
+.kpi.kred::before{background:var(--red)}
+.kpi.kblue::before{background:var(--blue)}
+.kpi.kgray::before{background:var(--ink-faint)}
+.kpi.kpurple::before{background:#5a2d6b}
+.kpi-num{font-family:'Lora',serif;font-size:34px;font-weight:500;margin-bottom:2px}
+.kpi-lbl{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-soft)}
+.kpi-sub{font-size:11px;color:var(--ink-faint);margin-top:3px}
+
+/* 2-COL GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
+
+/* CARDS */
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:20px 22px;box-shadow:var(--shadow)}
+.card-title{font-family:'Lora',serif;font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* BARRA DOCENTE */
+.doc-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.doc-bar-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.doc-bar-nom{width:120px;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.doc-bar-wrap{flex:1;background:#f0ece5;border-radius:20px;height:10px;overflow:hidden}
+.doc-bar-fill{height:100%;border-radius:20px;transition:width .6s ease}
+.doc-bar-count{font-size:11px;font-weight:700;width:35px;text-align:right;flex-shrink:0}
+.doc-bar-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;flex-shrink:0}
+
+/* MENSUAL CHART */
+.month-chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding-top:10px}
+.month-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.month-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.month-bar{width:70%;border-radius:4px 4px 0 0;transition:height .5s ease;min-height:2px;cursor:pointer;position:relative}
+.month-bar:hover{opacity:.85}
+.month-bar-tooltip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:4px 8px;border-radius:5px;font-size:11px;white-space:nowrap;z-index:10}
+.month-bar:hover .month-bar-tooltip{display:block}
+.month-lbl{font-size:10px;color:var(--ink-faint);font-weight:600;text-align:center}
+.month-num{font-size:11px;font-weight:700;color:var(--ink-soft)}
+
+/* TIPO PIE */
+.tipo-list{display:flex;flex-direction:column;gap:8px}
+.tipo-row{display:flex;align-items:center;gap:10px}
+.tipo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tipo-nom{flex:1;font-size:13px}
+.tipo-bar-wrap{width:100px;background:#f0ece5;border-radius:10px;height:7px;overflow:hidden}
+.tipo-bar-fill{height:100%;border-radius:10px}
+.tipo-count{font-size:12px;font-weight:700;width:28px;text-align:right;color:var(--ink-soft)}
+.tipo-pct{font-size:11px;color:var(--ink-faint);width:30px;text-align:right}
+
+/* COMPROMISOS OVERVIEW */
+.comp-overview{display:flex;gap:0;border-radius:8px;overflow:hidden;height:28px;margin-bottom:12px}
+.comp-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;transition:width .5s ease;min-width:0;overflow:hidden;white-space:nowrap}
+
+/* RANKING */
+.ranking-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.ranking-row:last-child{border-bottom:none}
+.rank-num{font-family:'Lora',serif;font-size:18px;font-weight:600;width:24px;text-align:center;color:var(--ink-faint);flex-shrink:0}
+.rank-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.rank-nom{flex:1;font-size:13px;font-weight:500}
+.rank-asig{font-size:11px;color:var(--ink-soft)}
+.rank-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+
+/* ALERTA PANEL */
+.alerta-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:8px;margin-bottom:7px}
+.alerta-dot{width:8px;height:8px;background:var(--red);border-radius:50%;flex-shrink:0}
+.alerta-nom{font-size:13px;font-weight:600}
+.alerta-det{font-size:11px;color:var(--red)}
+
+/* EMPTY */
+.empty-mini{text-align:center;padding:30px 10px;color:var(--ink-faint);font-size:13px}
+
+/* PRINT */
+@media print{
+  .topbar,.btn{display:none!important}
+  body{background:#fff}.page{padding:0;max-width:100%}
+  .card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Dashboard · <em>Acompañamiento Docente</em></div>
+  <div class="tbr">
+    <a href="index.html" class="btn bg bsm" target="acompanamiento">📅 Calendario</a>
+    <a href="formulario-observacion-utp.html" class="btn bg bsm" target="acompanamiento">📋 Formulario</a>
+    <a href="seguimiento-compromisos.html" class="btn bg bsm" target="acompanamiento">🤝 Compromisos</a>
+    <button class="btn bg bsm" onclick="window.print()">🖨 Imprimir</button>
+    <button class="btn bg bsm" onclick="location.reload()">↺ Actualizar</button>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- ENCABEZADO -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-family:'Lora',serif;font-size:26px;font-weight:500" id="dashTitle">Resumen de Acompañamiento</div>
+      <div style="font-size:13px;color:var(--ink-soft);margin-top:3px" id="dashSub">Cargando datos...</div>
+    </div>
+    <div style="font-size:12px;color:var(--ink-faint);text-align:right">
+      Generado el <strong id="fechaHoy"></strong>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="section-title">Resumen general</div>
+  <div class="kpi-grid">
+    <div class="kpi kblue"><div class="kpi-num" id="kDocentes">—</div><div class="kpi-lbl">Docentes</div><div class="kpi-sub">en el establecimiento</div></div>
+    <div class="kpi kgreen"><div class="kpi-num" id="kVisitas">—</div><div class="kpi-lbl">Visitas realizadas</div><div class="kpi-sub">en el año</div></div>
+    <div class="kpi kpurple"><div class="kpi-num" id="kProgramadas">—</div><div class="kpi-lbl">Programadas</div><div class="kpi-sub">próximas visitas</div></div>
+    <div class="kpi kgreen"><div class="kpi-num" id="kCumplimiento">—</div><div class="kpi-lbl">Cumplimiento</div><div class="kpi-sub">docentes con meta</div></div>
+    <div class="kpi kyellow"><div class="kpi-num" id="kCompromisos">—</div><div class="kpi-lbl">Compromisos</div><div class="kpi-sub">activos</div></div>
+    <div class="kpi kred"><div class="kpi-num" id="kAlertas">—</div><div class="kpi-lbl">Alertas</div><div class="kpi-sub">sin obs. reciente</div></div>
+  </div>
+
+  <!-- EVOLUCIÓN + TIPOS -->
+  <div class="section-title">Actividad del año</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">📈 Evolución mensual de visitas</div>
+      <div class="month-chart" id="monthChart"></div>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap">
+        <span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#2d6a4f;border-radius:2px;display:inline-block"></span>Realizadas</span>
+        <span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#a8d8bc;border-radius:2px;display:inline-block"></span>Programadas</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔍 Distribución por tipo de observación</div>
+      <div class="tipo-list" id="tipoList"></div>
+    </div>
+  </div>
+
+  <!-- AVANCE POR DOCENTE + COMPROMISOS -->
+  <div class="section-title">Estado por docente</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">👥 Avance de observaciones por docente</div>
+      <div id="docBarList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🤝 Estado de compromisos</div>
+      <div class="comp-overview" id="compOverview"></div>
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:12px;font-weight:600;color:var(--green)" id="compVerde">— cumplidos</span>
+        <span style="font-size:12px;font-weight:600;color:var(--yellow)" id="compAmarillo">— en proceso</span>
+        <span style="font-size:12px;font-weight:600;color:var(--red)" id="compRojo">— pendientes</span>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:14px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Compromisos vencidos sin cumplir</div>
+        <div id="compVencidos"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKING + ALERTAS -->
+  <div class="section-title">Atención prioritaria</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">🏆 Docentes con más observaciones</div>
+      <div id="rankingMas"></div>
+      <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px;">
+        <div class="card-title" style="margin-bottom:12px">📉 Docentes con menos observaciones</div>
+        <div id="rankingMenos"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚠️ Docentes sin observación reciente</div>
+      <div id="alertasList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// =============================================
+// DATOS DESDE LOCALSTORAGE
+// =============================================
+const HOY = new Date(); HOY.setHours(0,0,0,0);
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const COLORES = ["#e07a4a","#2d5f8a","#2d6a4f","#8b2fc9","#b5451b","#0d6e8c","#8b6914","#4a3728","#5a2d82","#1a5c3a","#c45c2a","#1e4a73"];
+const TIPO_COLORES = ['#2d6a4f','#1a3a5c','#7a3520','#5a2d6b','#8a6400','#0d6e8c'];
+
+function getSigla(n){const p=n.trim().split(' ').filter(x=>x.length>0);return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():n.substring(0,2).toUpperCase()}
+function getColor(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return COLORES[Math.abs(h)%COLORES.length]}
+
+function cargarTodo() {
+  const config   = JSON.parse(localStorage.getItem('utp_config') || '{}');
+  const docentes = JSON.parse(localStorage.getItem('utp_docentes') || '[]');
+  const visitas  = JSON.parse(localStorage.getItem('utp_visitas') || '[]');
+  const comps    = JSON.parse(localStorage.getItem('utp_compromisos') || '[]');
+  return { config, docentes, visitas, comps };
+}
+
+// =============================================
+// RENDER PRINCIPAL
+// =============================================
+function renderDashboard() {
+  const { config, docentes, visitas, comps } = cargarTodo();
+  const META = config.meta || 3;
+  const anio = config.anio || new Date().getFullYear();
+
+  // Fechas
+  document.getElementById('fechaHoy').textContent = HOY.toLocaleDateString('es-CL',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('dashTitle').textContent = config.escuela || 'Resumen de Acompañamiento';
+  document.getElementById('dashSub').textContent = `Año ${anio} · Jefe/a UTP: ${config.utp||'—'} · Meta: ${META} observaciones por docente`;
+
+  const visitasAnio = visitas.filter(v => v.fecha && v.fecha.startsWith(anio));
+  const realizadas  = visitasAnio.filter(v => new Date(v.fecha+'T00:00:00') <= HOY);
+  const programadas = visitasAnio.filter(v => new Date(v.fecha+'T00:00:00') > HOY);
+  const docConMeta  = docentes.filter(d => realizadas.filter(v=>v.docId===d.id).length >= META);
+  const cumplPct    = docentes.length > 0 ? Math.round(docConMeta.length/docentes.length*100)+'%' : '—';
+
+  const diasSin = (docId) => {
+    const vs = realizadas.filter(v=>v.docId===docId);
+    if(vs.length===0) return 999;
+    const ultima = vs.map(v=>new Date(v.fecha+'T00:00:00')).sort((a,b)=>b-a)[0];
+    return Math.floor((HOY-ultima)/(1000*60*60*24));
+  };
+  const enAlerta = docentes.filter(d => diasSin(d.id) > 60).length;
+
+  // KPIs
+  document.getElementById('kDocentes').textContent     = docentes.length || '—';
+  document.getElementById('kVisitas').textContent      = realizadas.length;
+  document.getElementById('kProgramadas').textContent  = programadas.length;
+  document.getElementById('kCumplimiento').textContent = cumplPct;
+  document.getElementById('kCompromisos').textContent  = comps.length;
+  document.getElementById('kAlertas').textContent      = enAlerta;
+
+  renderMensual(visitasAnio, anio);
+  renderTipos(realizadas);
+  renderDocBars(docentes, realizadas, META);
+  renderCompromisos(comps);
+  renderRankings(docentes, realizadas);
+  renderAlertas(docentes, diasSin);
+}
+
+// =============================================
+// EVOLUCIÓN MENSUAL
+// =============================================
+function renderMensual(visitas, anio) {
+  const container = document.getElementById('monthChart');
+  const mesesData = Array.from({length:12}, (_,i) => {
+    const mes = String(i+1).padStart(2,'0');
+    const del_mes = visitas.filter(v => v.fecha && v.fecha.startsWith(`${anio}-${mes}`));
+    const real = del_mes.filter(v => new Date(v.fecha+'T00:00:00') <= HOY).length;
+    const prog = del_mes.filter(v => new Date(v.fecha+'T00:00:00') > HOY).length;
+    return { mes: MESES[i], real, prog, total: real+prog };
+  });
+
+  const maxVal = Math.max(...mesesData.map(m=>m.total), 1);
+
+  container.innerHTML = mesesData.map(m => `
+    <div class="month-col">
+      <div class="month-bar-wrap">
+        <div style="width:70%;display:flex;flex-direction:column;align-items:stretch;height:${Math.round((m.total/maxVal)*100)}%;min-height:${m.total>0?4:0}px;border-radius:4px 4px 0 0;overflow:hidden;position:relative;cursor:pointer" title="${m.mes}: ${m.real} realizadas, ${m.prog} programadas">
+          ${m.real>0?`<div style="flex:${m.real};background:#2d6a4f"></div>`:''}
+          ${m.prog>0?`<div style="flex:${m.prog};background:#a8d8bc"></div>`:''}
+          ${m.total===0?`<div style="height:3px;background:#f0ece5;border-radius:2px"></div>`:''}
+        </div>
+      </div>
+      <div class="month-num">${m.total||''}</div>
+      <div class="month-lbl">${m.mes}</div>
+    </div>`).join('');
+}
+
+// =============================================
+// TIPOS
+// =============================================
+function renderTipos(realizadas) {
+  const container = document.getElementById('tipoList');
+  const tipos = {};
+  realizadas.forEach(v => { const t = v.tipo||'Sin tipo'; tipos[t]=(tipos[t]||0)+1; });
+  const total = realizadas.length || 1;
+  const sorted = Object.entries(tipos).sort((a,b)=>b[1]-a[1]);
+
+  if(sorted.length===0){
+    container.innerHTML='<div class="empty-mini">Sin datos aún</div>';return;
+  }
+  container.innerHTML = sorted.map(([tipo,count],i) => `
+    <div class="tipo-row">
+      <div class="tipo-dot" style="background:${TIPO_COLORES[i%TIPO_COLORES.length]}"></div>
+      <div class="tipo-nom">${tipo}</div>
+      <div class="tipo-bar-wrap"><div class="tipo-bar-fill" style="width:${Math.round(count/total*100)}%;background:${TIPO_COLORES[i%TIPO_COLORES.length]}"></div></div>
+      <div class="tipo-count">${count}</div>
+      <div class="tipo-pct">${Math.round(count/total*100)}%</div>
+    </div>`).join('');
+}
+
+// =============================================
+// BARRAS POR DOCENTE
+// =============================================
+function renderDocBars(docentes, realizadas, META) {
+  const container = document.getElementById('docBarList');
+  if(docentes.length===0){container.innerHTML='<div class="empty-mini">Sin docentes configurados</div>';return;}
+
+  const data = docentes.map(d => ({
+    ...d,
+    count: realizadas.filter(v=>v.docId===d.id).length
+  })).sort((a,b)=>b.count-a.count);
+
+  const maxCount = Math.max(...data.map(d=>d.count), META);
+
+  container.innerHTML = data.map(d => {
+    const pct = Math.round((d.count/maxCount)*100);
+    const cumple = d.count >= META;
+    const color = d.color || getColor(d.nombre);
+    const barColor = cumple ? '#2d6a4f' : d.count > 0 ? '#e0c96a' : '#e0a8a8';
+    return `<div class="doc-bar-row">
+      <div class="doc-bar-av" style="background:${color}">${getSigla(d.nombre)}</div>
+      <div class="doc-bar-nom" title="${d.nombre}">${d.nombre.split(' ')[0]} ${d.nombre.split(' ')[1]||''}</div>
+      <div class="doc-bar-wrap"><div class="doc-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="doc-bar-count" style="color:${cumple?'var(--green)':d.count>0?'var(--yellow)':'var(--red)'}">${d.count}/${META}</div>
+      ${cumple?`<span class="doc-bar-badge" style="background:var(--green-bg);color:var(--green)">✓</span>`
+               :d.count>0?`<span class="doc-bar-badge" style="background:var(--yellow-bg);color:var(--yellow)">◑</span>`
+               :`<span class="doc-bar-badge" style="background:var(--red-bg);color:var(--red)">○</span>`}
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+// COMPROMISOS
+// =============================================
+function renderCompromisos(comps) {
+  const verde    = comps.filter(c=>c.estado==='verde').length;
+  const amarillo = comps.filter(c=>c.estado==='amarillo').length;
+  const rojo     = comps.filter(c=>!c.estado||c.estado==='rojo').length;
+  const total    = comps.length || 1;
+
+  // Barra overview
+  const overview = document.getElementById('compOverview');
+  if(comps.length===0){
+    overview.innerHTML='<div style="width:100%;background:#f0ece5;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink-faint)">Sin compromisos</div>';
+  } else {
+    overview.innerHTML = `
+      ${verde>0?`<div class="comp-seg" style="width:${Math.round(verde/total*100)}%;background:var(--green)">✓ ${verde}</div>`:''}
+      ${amarillo>0?`<div class="comp-seg" style="width:${Math.round(amarillo/total*100)}%;background:var(--yellow)">◑ ${amarillo}</div>`:''}
+      ${rojo>0?`<div class="comp-seg" style="width:${Math.round(rojo/total*100)}%;background:var(--red)">○ ${rojo}</div>`:''}`;
+  }
+
+  document.getElementById('compVerde').textContent   = `${verde} cumplidos`;
+  document.getElementById('compAmarillo').textContent = `${amarillo} en proceso`;
+  document.getElementById('compRojo').textContent    = `${rojo} pendientes`;
+
+  // Vencidos
+  const vencidos = comps.filter(c => c.estado!=='verde' && c.fechaLimite && new Date(c.fechaLimite+'T00:00:00') < HOY);
+  const vEl = document.getElementById('compVencidos');
+  if(vencidos.length===0){
+    vEl.innerHTML='<div style="font-size:12px;color:var(--green);font-weight:600">✓ Sin compromisos vencidos</div>';
+  } else {
+    vEl.innerHTML = vencidos.slice(0,4).map(c => {
+      const diff = Math.floor((HOY-new Date(c.fechaLimite+'T00:00:00'))/(1000*60*60*24));
+      return `<div class="alerta-item" style="background:var(--red-bg);border-color:var(--red-bd)">
+        <div class="alerta-dot"></div>
+        <div>
+          <div class="alerta-nom">${c.docente}</div>
+          <div class="alerta-det">Venció hace ${diff} días · ${c.texto.substring(0,60)}${c.texto.length>60?'...':''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// =============================================
+// RANKINGS
+// =============================================
+function renderRankings(docentes, realizadas) {
+  const data = docentes.map(d => ({
+    ...d,
+    count: realizadas.filter(v=>v.docId===d.id).length
+  }));
+
+  const mas   = [...data].sort((a,b)=>b.count-a.count).slice(0,4);
+  const menos = [...data].sort((a,b)=>a.count-b.count).slice(0,4);
+
+  const renderRank = (lista, tipo) => lista.map((d,i) => {
+    const color = d.color || getColor(d.nombre);
+    const badgeColor = tipo==='mas'
+      ? (i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--ink-faint)')
+      : 'var(--red)';
+    return `<div class="ranking-row">
+      <div class="rank-num">${i+1}</div>
+      <div class="rank-av" style="background:${color}">${getSigla(d.nombre)}</div>
+      <div>
+        <div class="rank-nom">${d.nombre}</div>
+        <div class="rank-asig">${d.asignatura||''}</div>
+      </div>
+      <span class="rank-badge" style="background:${tipo==='mas'?'var(--green-bg)':'var(--red-bg)'};color:${tipo==='mas'?'var(--green)':'var(--red)'}">${d.count} obs.</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('rankingMas').innerHTML   = mas.length   ? renderRank(mas,'mas')   : '<div class="empty-mini">Sin datos</div>';
+  document.getElementById('rankingMenos').innerHTML = menos.length ? renderRank(menos,'menos'): '<div class="empty-mini">Sin datos</div>';
+}
+
+// =============================================
+// ALERTAS
+// =============================================
+function renderAlertas(docentes, diasSin) {
+  const container = document.getElementById('alertasList');
+  const alertas = docentes
+    .map(d => ({ ...d, dias: diasSin(d.id) }))
+    .filter(d => d.dias > 60)
+    .sort((a,b) => b.dias-a.dias);
+
+  if(alertas.length===0){
+    container.innerHTML='<div style="background:var(--green-bg);border:1px solid var(--green-bd);border-radius:8px;padding:14px 16px;color:var(--green);font-size:13px;font-weight:600">✓ Todos los docentes tienen observación reciente</div>';
+    return;
+  }
+  container.innerHTML = alertas.map(d => `
+    <div class="alerta-item">
+      <div class="alerta-dot"></div>
+      <div style="flex:1">
+        <div class="alerta-nom">${d.nombre}</div>
+        <div class="alerta-det">${d.dias===999?'Sin observaciones registradas en el año':`Hace ${d.dias} días sin observación`}</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--red)">${d.dias===999?'—':d.dias+'d'}</div>
+    </div>`).join('');
+}
+
+// =============================================
+// INIT
+// =============================================
+renderDashboard();
+</script>
+</body>
+</html>
