@@ -58,6 +58,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--ink
 .itop{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
 .icod{font-size:10px;font-weight:700;color:var(--ink-faint);background:var(--bg);padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:2px}
 .itxt{font-size:13px;line-height:1.55;flex:1}
+.ipregunta{font-size:12px;color:var(--green);background:var(--green-bg);border-left:3px solid var(--green-bd);border-radius:0 6px 6px 0;padding:7px 12px;margin-bottom:10px;line-height:1.5}
 .e3{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .eb{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600;color:var(--ink-soft);transition:all .17s;white-space:nowrap}
 .eb:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.09)}
@@ -118,6 +119,9 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%}
   <div class="tbr">
     <a href="index.html" class="btn bg bsm np" target="acompanamiento" style="text-decoration:none;">📅 Calendario</a>
     <button class="btn bg bsm np" onclick="openHist()">📋 Registros</button>
+    <a href="seguimiento-compromisos.html" class="btn bg bsm np" target="acompanamiento" style="text-decoration:none;">🤝 Compromisos</a>
+    <a href="dashboard.html" class="btn bg bsm np" target="acompanamiento" style="text-decoration:none;">📊 Dashboard</a>
+    <a href="gestor-reemplazos.html" class="btn bg bsm np" target="acompanamiento" style="text-decoration:none;">🔄 Reemplazos</a>
     <button class="btn bg bsm np" onclick="window.print()">🖨 Imprimir / PDF</button>
     <button class="btn bp bsm" onclick="guardar()">💾 Guardar</button>
   </div>
@@ -222,28 +226,28 @@ canvas{display:block;cursor:crosshair;touch-action:none;width:100%}
 const FD=[
   {id:'A',color:'#1a3d5c',ico:'🤝',nom:'Interacción Docente-Estudiante',ref:'MBE Dom. A y B',
    inds:[
-    {id:'A1',t:'El/la docente genera instancias de diálogo genuino, escuchando y valorando las respuestas e ideas de sus estudiantes.'},
-    {id:'A2',t:'Formula preguntas abiertas que invitan a pensar, reflexionar y argumentar, más allá de respuestas de memoria.'},
-    {id:'A3',t:'Reconoce y valora los aportes de los estudiantes, generando confianza para participar sin temor al error.'},
-    {id:'A4',t:'Brinda retroalimentación oportuna y constructiva que orienta al estudiante en su proceso de aprendizaje.'},
-    {id:'A5',t:'Demuestra conocimiento de sus estudiantes: sus intereses, contextos y formas de aprender.'},
+    {id:'A1',t:'El/la docente genera instancias de diálogo genuino, escuchando y valorando las respuestas e ideas de sus estudiantes.',p:'¿Qué momentos de esta clase recuerdas como de diálogo real con tus estudiantes? ¿Qué escuchaste que te sorprendió?'},
+    {id:'A2',t:'Formula preguntas abiertas que invitan a pensar, reflexionar y argumentar, más allá de respuestas de memoria.',p:'¿Qué tipo de preguntas usaste hoy para activar el pensamiento de tus estudiantes? ¿Cómo respondieron?'},
+    {id:'A3',t:'Reconoce y valora los aportes de los estudiantes, generando confianza para participar sin temor al error.',p:'¿Cómo reaccionaste cuando un estudiante se equivocó o dio una respuesta inesperada? ¿Qué mensaje crees que recibió?'},
+    {id:'A4',t:'Brinda retroalimentación oportuna y constructiva que orienta al estudiante en su proceso de aprendizaje.',p:'¿En qué momentos retroalimentaste a tus estudiantes? ¿Qué información les entregaste para que pudieran mejorar?'},
+    {id:'A5',t:'Demuestra conocimiento de sus estudiantes: sus intereses, contextos y formas de aprender.',p:'¿Hay algún estudiante que te preocupa en términos de aprendizaje? ¿Qué sabes de él/ella que te ayude a entender lo que le pasa?'},
    ]},
   {id:'B',color:'#2d5a3d',ico:'🎯',nom:'Estrategias Didácticas',ref:'MBE Dom. A y C',
    inds:[
-    {id:'B1',t:'Los objetivos de aprendizaje son comunicados con claridad y los estudiantes comprenden qué se espera de ellos.'},
-    {id:'B2',t:'Las actividades son pertinentes al objetivo, variadas y promueven el aprendizaje activo de los estudiantes.'},
-    {id:'B3',t:'Conecta los contenidos con conocimientos previos, experiencias cotidianas o contextos significativos.'},
-    {id:'B4',t:'Utiliza recursos y materiales que apoyan la comprensión y despiertan el interés de los estudiantes.'},
-    {id:'B5',t:'Monitorea la comprensión durante la clase y ajusta su enseñanza cuando detecta dificultades.'},
-    {id:'B6',t:'Considera distintos ritmos y necesidades, ofreciendo apoyo diferenciado cuando es necesario.'},
+    {id:'B1',t:'Los objetivos de aprendizaje son comunicados con claridad y los estudiantes comprenden qué se espera de ellos.',p:'Si le preguntaras a un estudiante al azar qué iban a aprender hoy, ¿qué crees que respondería?'},
+    {id:'B2',t:'Las actividades son pertinentes al objetivo, variadas y promueven el aprendizaje activo de los estudiantes.',p:'¿Cómo decidiste usar esa actividad hoy? ¿Qué te hizo pensar que era la más adecuada para este objetivo?'},
+    {id:'B3',t:'Conecta los contenidos con conocimientos previos, experiencias cotidianas o contextos significativos.',p:'¿Qué estrategia usaste para conectar lo nuevo con lo que los estudiantes ya sabían o viven?'},
+    {id:'B4',t:'Utiliza recursos y materiales que apoyan la comprensión y despiertan el interés de los estudiantes.',p:'¿Qué recursos usaste hoy? ¿Cuál crees que tuvo más impacto en la comprensión de los estudiantes y por qué?'},
+    {id:'B5',t:'Monitorea la comprensión durante la clase y ajusta su enseñanza cuando detecta dificultades.',p:'¿En qué momento de la clase te diste cuenta de que algo no estaba quedando claro? ¿Qué hiciste al respecto?'},
+    {id:'B6',t:'Considera distintos ritmos y necesidades, ofreciendo apoyo diferenciado cuando es necesario.',p:'¿Hubo estudiantes que necesitaron más apoyo que otros hoy? ¿Cómo lo abordaste durante la clase?'},
    ]},
   {id:'C',color:'#5a2d6b',ico:'🌿',nom:'Clima de Aula',ref:'MBE Dom. B',
    inds:[
-    {id:'C1',t:'El ambiente es seguro y respetuoso: los estudiantes se tratan bien entre sí y con el/la docente.'},
-    {id:'C2',t:'Las normas de convivencia son claras y se aplican de manera consistente y justa.'},
-    {id:'C3',t:'Los estudiantes muestran disposición al aprendizaje: participan, se concentran y se involucran.'},
-    {id:'C4',t:'El/la docente gestiona el tiempo eficientemente, minimizando los momentos de espera o desconexión.'},
-    {id:'C5',t:'Promueve un clima inclusivo donde todos los estudiantes se sienten valorados y parte de la clase.'},
+    {id:'C1',t:'El ambiente es seguro y respetuoso: los estudiantes se tratan bien entre sí y con el/la docente.',p:'¿Cómo describirías el ambiente que se vivió hoy en la sala? ¿Qué lo favorece y qué lo dificulta?'},
+    {id:'C2',t:'Las normas de convivencia son claras y se aplican de manera consistente y justa.',p:'¿Qué acuerdos de convivencia tienen con el curso? ¿Cómo los recuerdas o refuerzas durante la clase?'},
+    {id:'C3',t:'Los estudiantes muestran disposición al aprendizaje: participan, se concentran y se involucran.',p:'¿Qué estudiantes te parecieron más desconectados hoy? ¿Qué crees que estaba pasando con ellos?'},
+    {id:'C4',t:'El/la docente gestiona el tiempo eficientemente, minimizando los momentos de espera o desconexión.',p:'Si pudieras volver a hacer esta clase, ¿en qué momento cambiarías el ritmo o la distribución del tiempo?'},
+    {id:'C5',t:'Promueve un clima inclusivo donde todos los estudiantes se sienten valorados y parte de la clase.',p:'¿Qué hiciste hoy para asegurarte de que todos los estudiantes tuvieran oportunidad de participar y sentirse incluidos?'},
    ]}
 ];
 
@@ -267,6 +271,7 @@ function rI(i){
   const v=R[i.id]||null,co=CO[i.id]||'',hc=co.trim().length>0;
   return `<div class="ir" id="rw${i.id}">
     <div class="itop"><span class="icod">${i.id}</span><div class="itxt">${i.t}</div></div>
+    ${i.p?`<div class="ipregunta">💬 <em>${i.p}</em></div>`:''}
     <div class="e3">
       <button class="eb${v==='obs'?' sel':''}" data-v="obs" onclick="sR('${i.id}','obs',this)"><span class="ed"></span>Claramente observado</button>
       <button class="eb${v==='par'?' sel':''}" data-v="par" onclick="sR('${i.id}','par',this)"><span class="ed"></span>Parcialmente observado</button>
