@@ -489,9 +489,8 @@ function renderHor(){
           <option value="LD" ${t==='LD'?'selected':''}>LD</option>
           <option value="X" ${t==='X'?'selected':''}>—</option>
         </select>
-        ${t==='L'?`<input class="cel-txt" placeholder="Asignatura" value="${cell.asig||''}" onchange="camCel(${docId},'${dia}',${b},this,'asig')">
-        <input class="cel-txt" placeholder="Curso" value="${cell.curso||''}" onchange="camCel(${docId},'${dia}',${b},this,'curso')">`:
-        `<input class="cel-txt" style="visibility:hidden" disabled>`}
+        <input class="cel-txt" placeholder="Asignatura" value="${cell.asig||''}" ${t!=='L'?'style="visibility:hidden" disabled':''} onchange="camCel(${docId},'${dia}',${b},this,'asig')">
+        <input class="cel-txt" placeholder="Curso" value="${cell.curso||''}" ${t!=='L'?'style="visibility:hidden" disabled':''} onchange="camCel(${docId},'${dia}',${b},this,'curso')">
       </div></td>`;
     });
     html+=`</tr>`;
